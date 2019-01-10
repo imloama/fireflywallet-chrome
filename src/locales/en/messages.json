@@ -1,0 +1,10 @@
+{
+    "appname":{
+        "message": "stellar wallet",
+        "description":"stellar wallet name"
+    },
+    "description":{
+        "message":"stellar wallet chrome extension",
+        "description":"steller wallet description"
+    }
+}

@@ -1,2 +1,1 @@
-# fireflywallet-chrome
-fireflywallet by chrome
+# 萤火钱包谷歌插件版，基本原桌面版代码
