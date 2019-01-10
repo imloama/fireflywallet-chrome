@@ -1,5 +1,5 @@
 import axios from 'axios'
-import pkg from '../../../package.json'
+import pkg from '../../package.json'
 import { isNativeAsset } from './assets'
 
 export const APP_NAME = 'firefly'

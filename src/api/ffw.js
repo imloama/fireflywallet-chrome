@@ -6,7 +6,7 @@
 // 5. 备份非敏感数据
 // 6. 恢复非敏感数据
 // 7. 授信
-import pkg from '../../../package.json'
+import pkg from '../../package.json'
 var sjcl = require('sjcl')
 
 
