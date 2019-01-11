@@ -35,11 +35,14 @@ module.exports = {
 
     },
     productionSourceMap: false,
+    runtimeCompiler: true,
     chainWebpack: (config)=>{
         config.resolve.alias
+            // .set('vue', resolve('node_modules')+'/vue/dist/vue.esm.js')
             .set('@', resolve('src'))
             .set('components',resolve('src/components'));
-        
+        // config.resolve.extensions: ['.js', '.vue', '.json',".css"],
+
         // config
         //     .entry('background')
         //     .add(resolve('src')+'/background.js')
