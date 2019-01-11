@@ -28,28 +28,10 @@ export class DataPulseProvider {
 	private readonly _subscribers: DataSubscribers = {};
 	private _requestsPending: number = 0;
 	private readonly _historyProvider: HistoryProvider;
-	private _interval:number|undefined;
-	private _lastStartTime:number = -1;
 
 	public constructor(historyProvider: HistoryProvider, updateFrequency: number) {
 		this._historyProvider = historyProvider;
-		console.log('------------------sequence:' + updateFrequency)
-		this._interval = setInterval(this._updateData.bind(this), updateFrequency);
-	}
-
-	public clearInterval(){
-		this._lastStartTime = -1;
-		if(this._interval){
-			clearInterval(this._interval)
-			this._interval = undefined
-			let keys = []
-			for(let key in this._subscribers){
-				keys.push(key)
-			}
-			for(let k in keys){
-				delete this._subscribers[k]
-			}
-		}
+		setInterval(this._updateData.bind(this), updateFrequency);
 	}
 
 	public subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: string, newDataCallback: SubscribeBarsCallback, listenerGuid: string): void {
@@ -95,27 +77,14 @@ export class DataPulseProvider {
 
 	private _updateDataForSubscriber(listenerGuid: string): Promise<void> {
 		const subscriptionRecord = this._subscribers[listenerGuid];
-		let endTime:number, startTime:number;
-		endTime = parseInt((Date.now() / 1000).toString())
-		if(this._lastStartTime <0){
-			startTime = endTime - periodLengthSeconds(subscriptionRecord.resolution, 100);
-		}else{
-			startTime = this._lastStartTime;
-		}
-		let seconds = resolutionToSeconds(subscriptionRecord.resolution);
-		if(endTime - startTime < seconds){
-			logMessage(`不到一个周期，不再请求访问数据！`)
-			return Promise.reject(`unavaiable`);
-		}
-		this._lastStartTime = endTime
-		console.log('----resolution - p:-' + periodLengthSeconds(subscriptionRecord.resolution, 100))
-		// const rangeEndTime = parseInt((Date.now() / 1000).toString());
+
+		const rangeEndTime = parseInt((Date.now() / 1000).toString());
 
 		// BEWARE: please note we really need 2 bars, not the only last one
 		// see the explanation below. `10` is the `large enough` value to work around holidays
-		// const rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
-		console.log(`----read history---resolution:${subscriptionRecord.resolution} - startTime:${startTime},--endTime:${endTime}---`)
-		return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, startTime, endTime)
+		const rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
+
+		return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, rangeStartTime, rangeEndTime)
 			.then((result: GetBarsResult) => {
 				this._onSubscriberDataReceived(listenerGuid, result);
 			});
@@ -160,6 +129,7 @@ export class DataPulseProvider {
 
 function periodLengthSeconds(resolution: string, requiredPeriodsCount: number): number {
 	let daysCount = 0;
+
 	if (resolution === 'D' || resolution === '1D') {
 		daysCount = requiredPeriodsCount;
 	} else if (resolution === 'M' || resolution === '1M') {
@@ -169,23 +139,6 @@ function periodLengthSeconds(resolution: string, requiredPeriodsCount: number): 
 	} else {
 		daysCount = requiredPeriodsCount * parseInt(resolution) / (24 * 60);
 	}
-	return daysCount * 24 * 60 * 60;
-}
 
-/**
- * 
- * @param resolution 周期
- */
-function resolutionToSeconds(resolution: string): number {
-	let millis = 0;
-	if (resolution === 'D' || resolution === '1D') {
-		millis =  86400;
-	} else if (resolution === 'M' || resolution === '1M') {
-		millis = 2678400;
-	} else if (resolution === 'W' || resolution === '1W') {
-		millis = 604800;
-	} else {
-		millis = parseInt(resolution);
-	}
-	return millis;
+	return daysCount * 24 * 60 * 60;
 }

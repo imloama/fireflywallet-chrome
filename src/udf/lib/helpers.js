@@ -1,7 +1,7 @@
 /**
  * If you want to enable logs from datafeed set it to `true`
  */
-var isLoggingEnabled = true;
+var isLoggingEnabled = false;
 export function logMessage(message) {
     if (isLoggingEnabled) {
         var now = new Date();

@@ -3,17 +3,9 @@ var DataPulseProvider = /** @class */ (function () {
     function DataPulseProvider(historyProvider, updateFrequency) {
         this._subscribers = {};
         this._requestsPending = 0;
-        this._lastStartTime = -1;
         this._historyProvider = historyProvider;
-        console.log('------------------sequence:' + updateFrequency);
-        this._interval = setInterval(this._updateData.bind(this), updateFrequency);
+        setInterval(this._updateData.bind(this), updateFrequency);
     }
-    DataPulseProvider.prototype.clearInterval = function () {
-        this._lastStartTime = -1;
-        if (this._interval) {
-            clearInterval(this._interval);
-        }
-    };
     DataPulseProvider.prototype.subscribeBars = function (symbolInfo, resolution, newDataCallback, listenerGuid) {
         if (this._subscribers.hasOwnProperty(listenerGuid)) {
             logMessage("DataPulseProvider: already has subscriber with id=" + listenerGuid);
@@ -57,27 +49,11 @@ var DataPulseProvider = /** @class */ (function () {
     DataPulseProvider.prototype._updateDataForSubscriber = function (listenerGuid) {
         var _this = this;
         var subscriptionRecord = this._subscribers[listenerGuid];
-        var endTime, startTime;
-        endTime = parseInt((Date.now() / 1000).toString());
-        if (this._lastStartTime < 0) {
-            startTime = endTime - periodLengthSeconds(subscriptionRecord.resolution, 100);
-        }
-        else {
-            startTime = this._lastStartTime;
-        }
-        var seconds = resolutionToSeconds(subscriptionRecord.resolution);
-        if (endTime - startTime < seconds) {
-            logMessage("\u4E0D\u5230\u4E00\u4E2A\u5468\u671F\uFF0C\u4E0D\u518D\u8BF7\u6C42\u8BBF\u95EE\u6570\u636E\uFF01");
-            return Promise.reject("unavaiable");
-        }
-        this._lastStartTime = endTime;
-        console.log('----resolution - p:-' + periodLengthSeconds(subscriptionRecord.resolution, 100));
-        // const rangeEndTime = parseInt((Date.now() / 1000).toString());
+        var rangeEndTime = parseInt((Date.now() / 1000).toString());
         // BEWARE: please note we really need 2 bars, not the only last one
         // see the explanation below. `10` is the `large enough` value to work around holidays
-        // const rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
-        console.log("----read history---resolution:" + subscriptionRecord.resolution + " - startTime:" + startTime + ",--endTime:" + endTime + "---");
-        return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, startTime, endTime)
+        var rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
+        return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, rangeStartTime, rangeEndTime)
             .then(function (result) {
             _this._onSubscriberDataReceived(listenerGuid, result);
         });
@@ -128,24 +104,4 @@ function periodLengthSeconds(resolution, requiredPeriodsCount) {
         daysCount = requiredPeriodsCount * parseInt(resolution) / (24 * 60);
     }
     return daysCount * 24 * 60 * 60;
-}
-/**
- *
- * @param resolution 周期
- */
-function resolutionToSeconds(resolution) {
-    var millis = 0;
-    if (resolution === 'D' || resolution === '1D') {
-        millis = 86400;
-    }
-    else if (resolution === 'M' || resolution === '1M') {
-        millis = 2678400;
-    }
-    else if (resolution === 'W' || resolution === '1W') {
-        millis = 604800;
-    }
-    else {
-        millis = parseInt(resolution);
-    }
-    return millis;
 }

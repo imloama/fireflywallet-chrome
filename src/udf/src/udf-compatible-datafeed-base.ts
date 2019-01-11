@@ -70,7 +70,7 @@ type UdfDatafeedTimescaleMark = UdfDatafeedMarkType<TimescaleMark>;
 
 function extractField<Field extends keyof Mark>(data: UdfDatafeedMark, field: Field, arrayIndex: number): Mark[Field];
 function extractField<Field extends keyof TimescaleMark>(data: UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): TimescaleMark[Field];
-function extractField<Field extends keyof (TimescaleMark & Mark)>(data: UdfDatafeedMark & UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): (TimescaleMark & Mark)[Field] {
+function extractField<Field extends keyof (TimescaleMark | Mark)>(data: UdfDatafeedMark | UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): (TimescaleMark | Mark)[Field] {
 	const value = data[field];
 	return Array.isArray(value) ? value[arrayIndex] : value;
 }
@@ -94,7 +94,7 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 
 	private readonly _requester: Requester;
 
-	protected constructor(datafeedURL: string, quotesProvider: IQuotesProvider, requester: Requester, updateFrequency: number = 60 * 1000) {
+	protected constructor(datafeedURL: string, quotesProvider: IQuotesProvider, requester: Requester, updateFrequency: number = 10 * 1000) {
 		this._datafeedURL = datafeedURL;
 		this._requester = requester;
 		this._historyProvider = new HistoryProvider(datafeedURL, this._requester);
@@ -111,10 +111,6 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 
 				this._setupWithConfiguration(configuration);
 			});
-	}
-
-	public clear(){
-		this._dataPulseProvider.clearInterval()
 	}
 
 	public onReady(callback: OnReadyCallback): void {
@@ -139,19 +135,19 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 		return undefined;
 	}
 
-	public getMarks(symbolInfo: LibrarySymbolInfo, startDate: number, endDate: number, onDataCallback: GetMarksCallback<Mark>, resolution: ResolutionString): void {
+	public getMarks(symbolInfo: LibrarySymbolInfo, from: number, to: number, onDataCallback: GetMarksCallback<Mark>, resolution: ResolutionString): void {
 		if (!this._configuration.supports_marks) {
 			return;
 		}
 
 		const requestParams: RequestParams = {
 			symbol: symbolInfo.ticker || '',
-			from: startDate,
-			to: endDate,
+			from: from,
+			to: to,
 			resolution: resolution,
 		};
 
-		this._send('marks', requestParams)
+		this._send<Mark[] | UdfDatafeedMark>('marks', requestParams)
 			.then((response: Mark[] | UdfDatafeedMark) => {
 				if (!Array.isArray(response)) {
 					const result: Mark[] = [];
@@ -178,19 +174,19 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 			});
 	}
 
-	public getTimescaleMarks(symbolInfo: LibrarySymbolInfo, startDate: number, endDate: number, onDataCallback: GetMarksCallback<TimescaleMark>, resolution: ResolutionString): void {
+	public getTimescaleMarks(symbolInfo: LibrarySymbolInfo, from: number, to: number, onDataCallback: GetMarksCallback<TimescaleMark>, resolution: ResolutionString): void {
 		if (!this._configuration.supports_timescale_marks) {
 			return;
 		}
 
 		const requestParams: RequestParams = {
 			symbol: symbolInfo.ticker || '',
-			from: startDate,
-			to: endDate,
+			from: from,
+			to: to,
 			resolution: resolution,
 		};
 
-		this._send('timescale_marks', requestParams)
+		this._send<TimescaleMark[] | UdfDatafeedTimescaleMark>('timescale_marks', requestParams)
 			.then((response: TimescaleMark[] | UdfDatafeedTimescaleMark) => {
 				if (!Array.isArray(response)) {
 					const result: TimescaleMark[] = [];
@@ -220,7 +216,7 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 			return;
 		}
 
-		this._send('time')
+		this._send<string>('time')
 			.then((response: string) => {
 				const time = parseInt(response);
 				if (!isNaN(time)) {
@@ -241,7 +237,7 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 				exchange: exchange,
 			};
 
-			this._send('search', params)
+			this._send<UdfSearchSymbolsResponse | UdfErrorResponse>('search', params)
 				.then((response: UdfSearchSymbolsResponse | UdfErrorResponse) => {
 					if (response.s !== undefined) {
 						logMessage(`UdfCompatibleDatafeed: search symbols error=${response.errmsg}`);
@@ -280,7 +276,7 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 				symbol: symbolName,
 			};
 
-			this._send('symbols', params)
+			this._send<ResolveSymbolResponse | UdfErrorResponse>('symbols', params)
 				.then((response: ResolveSymbolResponse | UdfErrorResponse) => {
 					if (response.s !== undefined) {
 						onError('unknown_symbol');

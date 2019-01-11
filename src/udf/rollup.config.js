@@ -13,7 +13,7 @@ module.exports = [
 		name: 'Datafeeds',
 		sourceMap: false,
 		output: {
-			format: 'cjs',
+			format: 'umd',
 			file: 'dist/bundle.js',
 		},
 		plugins: [

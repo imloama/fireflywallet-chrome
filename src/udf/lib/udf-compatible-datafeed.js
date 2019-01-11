@@ -5,7 +5,7 @@ import { Requester } from './requester';
 var UDFCompatibleDatafeed = /** @class */ (function (_super) {
     tslib_1.__extends(UDFCompatibleDatafeed, _super);
     function UDFCompatibleDatafeed(datafeedURL, updateFrequency) {
-        if (updateFrequency === void 0) { updateFrequency = 60 * 1000; }
+        if (updateFrequency === void 0) { updateFrequency = 10 * 1000; }
         var _this = this;
         var requester = new Requester();
         var quotesProvider = new QuotesProvider(datafeedURL, requester);

@@ -2,7 +2,7 @@ export var URL_PREFIX = 'firefly_trade_mock';
 var FFWAPI = /** @class */ (function () {
     function FFWAPI(datafeedUrl, params) {
         this._datafeedUrl = datafeedUrl;
-        var index = datafeedUrl.indexOf(URL_PREFIX);
+        var index = this._datafeedUrl.indexOf(URL_PREFIX);
         this._params = params;
         this._key = datafeedUrl.substring(index + URL_PREFIX.length + 1, datafeedUrl.length);
         this._horizonServer = datafeedUrl.substring(0, index);
@@ -74,6 +74,7 @@ var FFWAPI = /** @class */ (function () {
                 timezone: 'UTC',
                 minmov: 1,
                 // pricescale: 0.0000001,
+                "pricescale": 100,
                 minmov2: 0,
                 // pointvalue: 1,
                 has_intraday: true,

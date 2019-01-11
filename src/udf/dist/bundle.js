@@ -1,6 +1,8 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.Datafeeds = {})));
+}(this, (function (exports) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -31,7 +33,7 @@ function __extends(d, b) {
 /**
  * If you want to enable logs from datafeed set it to `true`
  */
-var isLoggingEnabled = true;
+var isLoggingEnabled = false;
 function logMessage(message) {
     if (isLoggingEnabled) {
         var now = new Date();
@@ -117,27 +119,9 @@ var DataPulseProvider = /** @class */ (function () {
     function DataPulseProvider(historyProvider, updateFrequency) {
         this._subscribers = {};
         this._requestsPending = 0;
-        this._lastStartTime = -1;
         this._historyProvider = historyProvider;
-        console.log('------------------sequence:' + updateFrequency);
-        this._interval = setInterval(this._updateData.bind(this), updateFrequency);
+        setInterval(this._updateData.bind(this), updateFrequency);
     }
-    DataPulseProvider.prototype.clearInterval = function () {
-        var this$1 = this;
-
-        this._lastStartTime = -1;
-        if (this._interval) {
-            clearInterval(this._interval);
-            this._interval = undefined;
-            var keys = [];
-            for (var key in this$1._subscribers) {
-                keys.push(key);
-            }
-            for (var k in keys) {
-                delete this$1._subscribers[k];
-            }
-        }
-    };
     DataPulseProvider.prototype.subscribeBars = function (symbolInfo, resolution, newDataCallback, listenerGuid) {
         if (this._subscribers.hasOwnProperty(listenerGuid)) {
             logMessage("DataPulseProvider: already has subscriber with id=" + listenerGuid);
@@ -183,27 +167,11 @@ var DataPulseProvider = /** @class */ (function () {
     DataPulseProvider.prototype._updateDataForSubscriber = function (listenerGuid) {
         var _this = this;
         var subscriptionRecord = this._subscribers[listenerGuid];
-        var endTime, startTime;
-        endTime = parseInt((Date.now() / 1000).toString());
-        if (this._lastStartTime < 0) {
-            startTime = endTime - periodLengthSeconds(subscriptionRecord.resolution, 100);
-        }
-        else {
-            startTime = this._lastStartTime;
-        }
-        var seconds = resolutionToSeconds(subscriptionRecord.resolution);
-        if (endTime - startTime < seconds) {
-            logMessage("\u4E0D\u5230\u4E00\u4E2A\u5468\u671F\uFF0C\u4E0D\u518D\u8BF7\u6C42\u8BBF\u95EE\u6570\u636E\uFF01");
-            return Promise.reject("unavaiable");
-        }
-        this._lastStartTime = endTime;
-        console.log('----resolution - p:-' + periodLengthSeconds(subscriptionRecord.resolution, 100));
-        // const rangeEndTime = parseInt((Date.now() / 1000).toString());
+        var rangeEndTime = parseInt((Date.now() / 1000).toString());
         // BEWARE: please note we really need 2 bars, not the only last one
         // see the explanation below. `10` is the `large enough` value to work around holidays
-        // const rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
-        console.log("----read history---resolution:" + subscriptionRecord.resolution + " - startTime:" + startTime + ",--endTime:" + endTime + "---");
-        return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, startTime, endTime)
+        var rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
+        return this._historyProvider.getBars(subscriptionRecord.symbolInfo, subscriptionRecord.resolution, rangeStartTime, rangeEndTime)
             .then(function (result) {
             _this._onSubscriberDataReceived(listenerGuid, result);
         });
@@ -253,26 +221,6 @@ function periodLengthSeconds(resolution, requiredPeriodsCount) {
         daysCount = requiredPeriodsCount * parseInt(resolution) / (24 * 60);
     }
     return daysCount * 24 * 60 * 60;
-}
-/**
- *
- * @param resolution 周期
- */
-function resolutionToSeconds(resolution) {
-    var millis = 0;
-    if (resolution === 'D' || resolution === '1D') {
-        millis = 86400;
-    }
-    else if (resolution === 'M' || resolution === '1M') {
-        millis = 2678400;
-    }
-    else if (resolution === 'W' || resolution === '1W') {
-        millis = 604800;
-    }
-    else {
-        millis = parseInt(resolution);
-    }
-    return millis;
 }
 
 var QuotesPulseProvider = /** @class */ (function () {
@@ -509,7 +457,7 @@ function extractField(data, field, arrayIndex) {
  */
 var UDFCompatibleDatafeedBase = /** @class */ (function () {
     function UDFCompatibleDatafeedBase(datafeedURL, quotesProvider, requester, updateFrequency) {
-        if (updateFrequency === void 0) { updateFrequency = 60 * 1000; }
+        if (updateFrequency === void 0) { updateFrequency = 10 * 1000; }
         var _this = this;
         this._configuration = defaultConfiguration();
         this._symbolsStorage = null;
@@ -527,9 +475,6 @@ var UDFCompatibleDatafeedBase = /** @class */ (function () {
             _this._setupWithConfiguration(configuration);
         });
     }
-    UDFCompatibleDatafeedBase.prototype.clear = function () {
-        this._dataPulseProvider.clearInterval();
-    };
     UDFCompatibleDatafeedBase.prototype.onReady = function (callback) {
         var _this = this;
         this._configurationReadyPromise.then(function () {
@@ -548,14 +493,14 @@ var UDFCompatibleDatafeedBase = /** @class */ (function () {
     UDFCompatibleDatafeedBase.prototype.calculateHistoryDepth = function (resolution, resolutionBack, intervalBack) {
         return undefined;
     };
-    UDFCompatibleDatafeedBase.prototype.getMarks = function (symbolInfo, startDate, endDate, onDataCallback, resolution) {
+    UDFCompatibleDatafeedBase.prototype.getMarks = function (symbolInfo, from, to, onDataCallback, resolution) {
         if (!this._configuration.supports_marks) {
             return;
         }
         var requestParams = {
             symbol: symbolInfo.ticker || '',
-            from: startDate,
-            to: endDate,
+            from: from,
+            to: to,
             resolution: resolution,
         };
         this._send('marks', requestParams)
@@ -582,14 +527,14 @@ var UDFCompatibleDatafeedBase = /** @class */ (function () {
             onDataCallback([]);
         });
     };
-    UDFCompatibleDatafeedBase.prototype.getTimescaleMarks = function (symbolInfo, startDate, endDate, onDataCallback, resolution) {
+    UDFCompatibleDatafeedBase.prototype.getTimescaleMarks = function (symbolInfo, from, to, onDataCallback, resolution) {
         if (!this._configuration.supports_timescale_marks) {
             return;
         }
         var requestParams = {
             symbol: symbolInfo.ticker || '',
-            from: startDate,
-            to: endDate,
+            from: from,
+            to: to,
             resolution: resolution,
         };
         this._send('timescale_marks', requestParams)
@@ -771,7 +716,7 @@ var URL_PREFIX = 'firefly_trade_mock';
 var FFWAPI = /** @class */ (function () {
     function FFWAPI(datafeedUrl, params) {
         this._datafeedUrl = datafeedUrl;
-        var index = datafeedUrl.indexOf(URL_PREFIX);
+        var index = this._datafeedUrl.indexOf(URL_PREFIX);
         this._params = params;
         this._key = datafeedUrl.substring(index + URL_PREFIX.length + 1, datafeedUrl.length);
         this._horizonServer = datafeedUrl.substring(0, index);
@@ -964,10 +909,11 @@ var tradeAggregationsParams = /** @class */ (function () {
 }());
 
 var Requester = /** @class */ (function () {
+    // private _headers: HeadersInit | undefined;
     function Requester(headers) {
-        if (headers) {
-            this._headers = headers;
-        }
+        // if (headers) {
+        // 	this._headers = headers;
+        // }
     }
     Requester.prototype.sendRequest = function (datafeedUrl, urlPath, params) {
         // if (params !== undefined) {
@@ -980,75 +926,16 @@ var Requester = /** @class */ (function () {
         // 	}).join('&');
         // }
         logMessage('New request: ' + urlPath);
-        console.log('---------------------dddddddddddddddddddd---------------');
-        console.log(datafeedUrl);
-        console.log(urlPath);
-        console.log(params);
+        var service = new FFWAPI(datafeedUrl, params);
+        return service.handle(urlPath);
         // Send user cookies if the URL is on the same origin as the calling script.
         // const options: RequestInit = { credentials: 'same-origin' };
         // if (this._headers !== undefined) {
         // 	options.headers = this._headers;
         // }
-        var service = new FFWAPI(datafeedUrl, params);
-        return service.handle(urlPath);
         // return fetch(`${datafeedUrl}/${urlPath}`, options)
         // 	.then((response: Response) => response.text())
         // 	.then((responseTest: string) => JSON.parse(responseTest));
-        //自定义业务
-        /**
-             /config返回配置信息，
-             {
-                    supports_search: false,
-                    supports_group_request: true,
-                    supported_resolutions: ["1", "5", "15", "30", "60", "1D", "1W", "1M"],
-                    supports_marks: false,
-                    supports_time: false
-                },
-                /symbol_info?group=<group_name>  商品集合信息
-
-                商品解析
-                /symbols?symbol=<symbol>
-                https://b.aitrade.ga/books/tradingview/book/Symbology.html#symbolinfo-structure
-
-
-                K线柱
-                GET /history?symbol=<ticker_name>&from=<unix_timestamp>&to=<unix_timestamp>&resolution=<resolution>
-                例:GET /history?symbol=BEAM~0&resolution=D&from=1386493512&to=1395133512
-                Response: 响应的预期是一个对象，下面列出了一些属性。每个属性都被视为表的列，如上所述。
-                    s: 状态码。 预期值:ok|error|no_data
-                    errmsg: 错误消息。只在s = 'error'时出现
-                    t: K线时间. unix时间戳 (UTC)
-                    c: 收盘价
-                    o: 开盘价 (可选)
-                    h: 最高价 (可选)
-                    l: 最低价(可选)
-                    v: 成交量 (可选)
-                    nextTime: 下一个K线柱的时间 如果在请求期间无数据 (状态码为no_data) (可选)
-
-                    标识
-                    GET /marks?symbol=<ticker_name>&from=<unix_timestamp>&to=<unix_timestamp>&resolution=<resolution>
-                    Response: 响应预期是一个对象，下面列出了一些属性。此对象与JS API中的respective response相似，但每个属性都被视为表的列，如上所述。
-
-                    {
-                            id: [array of ids],
-                            time: [array of times],
-                            color: [array of colors],
-                            text: [array of texts],
-                            label: [array of labels],
-                            labelFontColor: [array of label font colors],
-                            minSize: [array of minSizes],
-                    }
-                    //时间刻度标记
-                    报价
-                        Request:GET /quotes?symbols=<ticker_name_1>,<ticker_name_2>,...,<ticker_name_n>
-
-                        Example:GET /quotes?symbols=NYSE%3AAA%2CNYSE%3AF%2CNasdaqNM%3AAAPL
-                        s: status code for request. Expected values:ok|error
-                        errmsg: error message for client
-                        d:symbols data array
-          
-          
-         **/
     };
     return Requester;
 }());
@@ -1056,7 +943,7 @@ var Requester = /** @class */ (function () {
 var UDFCompatibleDatafeed = /** @class */ (function (_super) {
     __extends(UDFCompatibleDatafeed, _super);
     function UDFCompatibleDatafeed(datafeedURL, updateFrequency) {
-        if (updateFrequency === void 0) { updateFrequency = 60 * 1000; }
+        if (updateFrequency === void 0) { updateFrequency = 10 * 1000; }
         var _this = this;
         var requester = new Requester();
         var quotesProvider = new QuotesProvider(datafeedURL, requester);
@@ -1067,3 +954,7 @@ var UDFCompatibleDatafeed = /** @class */ (function (_super) {
 }(UDFCompatibleDatafeedBase));
 
 exports.UDFCompatibleDatafeed = UDFCompatibleDatafeed;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

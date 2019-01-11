@@ -15,7 +15,7 @@ import  defaultsDeep  from 'lodash/defaultsDeep'
 import { getAsset, isNativeAsset } from '@/api/assets'
 // import { widget } from '../charting_library/charting_library.min'
 // require('../udf/polyfills')
-import { UDFCompatibleDatafeed } from '../udf/dist/bundle'
+import { UDFCompatibleDatafeed } from '../udf/lib/udf-compatible-datafeed'
 
 export default {
   data(){

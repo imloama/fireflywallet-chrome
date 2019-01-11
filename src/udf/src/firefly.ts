@@ -16,7 +16,7 @@ export class FFWAPI {
 
   public constructor(datafeedUrl :string, params?: RequestParams){
     this._datafeedUrl = datafeedUrl;
-    let index = datafeedUrl.indexOf(URL_PREFIX);
+    let index = this._datafeedUrl.indexOf(URL_PREFIX);
     this._params = params;
     this._key = datafeedUrl.substring(index+URL_PREFIX.length+1, datafeedUrl.length);
     this._horizonServer = datafeedUrl.substring(0, index)
