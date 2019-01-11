@@ -1,6 +1,7 @@
 import assert from 'assert'
 import has from 'lodash/has'
-import StellarHDWallet from '../src/stellar-hd-wallet'
+// import StellarHDWallet from '../src/stellar-hd-wallet'
+import StellarHDWallet from 'stellar-hd-wallet'
 
 const assertKeypair = (actualKeypair, expectedPublicKey, expectedSecret) => {
   assert.equal(actualKeypair.publicKey(), expectedPublicKey)

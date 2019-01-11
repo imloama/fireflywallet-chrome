@@ -31,7 +31,8 @@
  * @see <a href="http://jeromeetienne.github.com/jquery-qrcode/" target="_blank">http://jeromeetienne.github.com/jquery-qrcode/</a>
  */
 var AwesomeQRCode;
-import GIFE from './gif'
+// import GIFE from './gif'
+require('./gif');
 
 // gifuct-js.js
 // https://raw.githubusercontent.com/matt-way/gifuct-js/master/dist/gifuct-js.js
@@ -738,7 +739,7 @@ import GIFE from './gif'
 })();
 
 // QR CODE CORE LIBRARY DEFINITION
-(function() {
+// (function() {
     // QR CODE CORE LIBRARY DEFINITION START
     // SHOULD NOT BE MODIFIED
     //
@@ -2409,16 +2410,6 @@ import GIFE from './gif'
 
         return rgb;
     }
-})();
 
-(function(window, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory;
-    } else if (typeof define === 'function' && define.amd) {
-        define(factory);
-    } else {
-        window.eventUtil = factory();
-    }
-})(this, function() {
-    return new AwesomeQRCode();
-});
+
+export default new AwesomeQRCode();

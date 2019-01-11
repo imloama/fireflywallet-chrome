@@ -3,8 +3,8 @@
 // 生成名片信息（用于生成二维码）
 // json数据格式
 import StellarSdk from 'stellar-sdk'
-import StellarHDWallet from '../libs/stellar-hd-wallet/src/stellar-hd-wallet'
-
+// import StellarHDWallet from '../libs/stellar-hd-wallet/src/stellar-hd-wallet'
+import StellarHDWallet from 'stellar-hd-wallet'
 
 export function exportNameCard(account){
  /*
