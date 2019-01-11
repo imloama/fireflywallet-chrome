@@ -40,7 +40,7 @@ module.exports = {
                         return JSON.stringify(jsonContent, null, 2);
                       },
                     },
-                    {from:'src/locales', to: '_locales'}
+                    {from:'src/_locales', to: '_locales'}
                   ])
               )
     }
