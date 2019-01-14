@@ -55,7 +55,7 @@
             v-model="num"
             @input="inputNum"
             append-icon='keyboard_tab'  v-bind:style="'width: 100% !important'"
-            :append-icon-cb = 'toMaxNum'
+            @click:append = 'toMaxNum'
             :color="isBuy ? 'primary':'error'"
             ></v-slider>
           <!--总额，自动计算-->

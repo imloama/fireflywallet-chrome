@@ -16,7 +16,7 @@
                 :label="$t('Account.Password')"
                 v-model="inpassword"
                 :append-icon="pwdvisible ? 'visibility' : 'visibility_off'"
-                :append-icon-cb="() => (pwdvisible = !pwdvisible)"
+                @click:append="() => (pwdvisible = !pwdvisible)"
                 :type="pwdvisible ? 'text':'password'"
                 @keyup.enter.native="okPwdInput"
                 required dark

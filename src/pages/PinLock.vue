@@ -9,7 +9,7 @@
        <v-text-field name="input-name" required dark
           :label="$t('Lock')" v-model="lockpwd"
           :append-icon="pwdvisible ? 'visibility' : 'visibility_off'"
-          :append-icon-cb="() => (pwdvisible = !pwdvisible)"
+          @click:append="() => (pwdvisible = !pwdvisible)"
           :type="pwdvisible ? 'text':'password'"
           @keyup.enter.native="unlock"
         ></v-text-field>

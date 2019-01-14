@@ -28,16 +28,15 @@
         <secret-key-input :enablePaste="true" :seed="scanSeed" ref="secretkeyRef"></secret-key-input>
       </div>
       <div v-if="importFlag === 0">
-        <v-text-field dark
+        <v-textarea dark
             :label="$t('mnemonic')"
             v-model="mnemonic"
             required
-            multi-line
             clearable
             class="seed-input"
             @input="inputMnemonic"
             rows=3
-            ></v-text-field>
+            ></v-textarea>
         <!--显示语言，用户可以选择-->
         <div class="lang-tabs pt-1 pb-1 cursorpointer">
           <span :class="'tab pa-1 ma-1' + ( lang ==='english' ? ' active':'' )" @click="changeLang(english.lang)">{{english.label}}</span>

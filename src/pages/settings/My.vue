@@ -23,14 +23,11 @@
               v-model="federation"
               class="white-input"
             ></v-text-field>  
-          <v-text-field
-              name="inflation"
+          <v-textarea  name="inflation"
               :label="$t('InflationAddress')"
               v-model="inflation"
               class="white-input"
-              multi-line
-              rows=2
-            ></v-text-field>  
+              rows=2></v-textarea>
           <div class="hintinfo">
             <div class="inflation">{{$t('InflationDesc')}}</div>
             <div class="inflation">

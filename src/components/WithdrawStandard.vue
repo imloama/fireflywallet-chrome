@@ -40,7 +40,7 @@
           v-model="dest"
           dark
           append-icon="bookmark"
-          :append-icon-cb="()=>{showbook=true}"
+          @click:append="()=>{showbook=true}"
           ></v-text-field>
       </div>
 
@@ -91,7 +91,7 @@
           dark
           max=100 step=10 ticks
           append-icon='keyboard_tab'  v-bind:style="'width: 100% !important'"
-          :append-icon-cb = 'toMax'
+          @click:append = 'toMax'
           @input="changeNum"
           ></v-slider>
       </div>

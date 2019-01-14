@@ -27,7 +27,7 @@
               name="url"
               v-model="url"
               append-icon="search"
-              :append-icon-cb="search"
+              @click:append="search"
               type="text"
               placeholder='fchain.io or stellar.org'
               primary

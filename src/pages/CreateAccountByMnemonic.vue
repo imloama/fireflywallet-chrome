@@ -17,7 +17,7 @@
               v-model="name"
               required
               append-icon='cached'
-              :append-icon-cb="this.chooseName"
+              @click:append="this.chooseName"
             ></v-text-field>
       <v-text-field
               dark
@@ -25,7 +25,7 @@
               :label="$t('Account.Password')"
               v-model="password"
               :append-icon="pwdvisible ? 'visibility' : 'visibility_off'"
-              :append-icon-cb="() => (pwdvisible = !pwdvisible)"
+              @click:append="() => (pwdvisible = !pwdvisible)"
               :type="pwdvisible ? 'text':'password'"
               required
             ></v-text-field>
@@ -34,7 +34,7 @@
               :label="$t('Account.ConfirmPassword')"
               v-model="repassword"
               :append-icon="repwdvisible ? 'visibility' : 'visibility_off'"
-              :append-icon-cb="() => (repwdvisible = !repwdvisible)"
+              @click:append="() => (repwdvisible = !repwdvisible)"
               :type="repwdvisible? 'text': 'password'"
               required
               @keyup.enter.native="nextStep"

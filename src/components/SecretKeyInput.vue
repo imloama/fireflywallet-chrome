@@ -9,11 +9,10 @@
  <template>
    <div  onTouchMove={this.preventTouchMove}>
 
-   <v-text-field dark
+   <v-textarea dark
       :label="$t('SecretKey')"
       v-model="seedInput"
       required
-      multi-line
       clearable
       :disabled="disabled"
       class="seed-input"
@@ -23,8 +22,8 @@
       @input="inputText"
       rows=3
       :append-icon="hideKeyboard ? 'keyboard' : 'keyboard_hide'"
-      :append-icon-cb="keyboardIconClick"
-      ></v-text-field>
+      @click:append="keyboardIconClick"
+      ></v-textarea>
     
     <!-- <secret-keyboard v-show="!hideKeyboard"
       ref="keyboard"

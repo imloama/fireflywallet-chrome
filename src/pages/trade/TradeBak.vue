@@ -95,7 +95,7 @@
                       dark
                       max=100 step=10 ticks
                       append-icon='keyboard_tab'  v-bind:style="'width: 90% !important'"
-                      :append-icon-cb = 'toMax'
+                      @click:append = 'toMax'
                       :color="tradeType ==='buy'? 'primary':'error'"
                       ></v-slider>
                     <!--总额，自动计算-->

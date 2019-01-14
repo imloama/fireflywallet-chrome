@@ -71,7 +71,7 @@
           <v-text-field
             :label="$t('DestinationAddress')"
             append-icon="account_box"
-            :append-icon-cb="contactsview"
+            @click:append="contactsview"
             v-model="destination"
             class="selectasset"
             dark
@@ -117,7 +117,7 @@
               dark
               type="text"
               append-icon="bookmark"
-              :append-icon-cb="()=>{showmemobook=true}"
+              @click:append="()=>{showmemobook=true}"
               :hint="$t('required')"
               required
               :disabled="this.memotype === null || this.memotype === 'None'"

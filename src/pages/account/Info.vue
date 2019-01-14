@@ -98,7 +98,7 @@
                     :label="$t('Account.Password')"
                     v-model="inpassword"
                     :append-icon="pwdvisible ? 'visibility' : 'visibility_off'"
-                    :append-icon-cb="() => (pwdvisible = !pwdvisible)"
+                    @click:append="() => (pwdvisible = !pwdvisible)"
                     :type="pwdvisible ? 'text':'password'"
                     required dark
                   @keyup.enter.native="okPwdInput"
@@ -119,7 +119,7 @@
                     :label="$t('Account.Password')"
                     v-model="inpassword"
                     :append-icon="pwdvisible ? 'visibility' : 'visibility_off'"
-                    :append-icon-cb="() => (pwdvisible = !pwdvisible)"
+                    @click:append="() => (pwdvisible = !pwdvisible)"
                     :type="pwdvisible ? 'text':'password'"
                     required dark
                   ></v-text-field> -->
@@ -184,7 +184,7 @@
                         :label="$t('Account.OriginPassword')"
                         v-model="inpassword1"
                         :append-icon="pwd1visible ? 'visibility' : 'visibility_off'"
-                        :append-icon-cb="() => (pwd1visible = !pwd1visible)"
+                        @click:append="() => (pwd1visible = !pwd1visible)"
                         :type="pwd1visible ? 'text':'password'"
                         required dark
                       ></v-text-field>
@@ -195,7 +195,7 @@
                         :label="$t('Account.NewPassword')"
                         v-model="inpassword2"
                         :append-icon="pwd2visible ? 'visibility' : 'visibility_off'"
-                        :append-icon-cb="() => (pwd2visible = !pwd2visible)"
+                        @click:append="() => (pwd2visible = !pwd2visible)"
                         :type="pwd2visible ? 'text':'password'"
                         required dark
                       ></v-text-field>
@@ -205,7 +205,7 @@
                       :label="$t('Account.RePassword')"
                       v-model="inpassword3"
                       :append-icon="pwd3visible ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (pwd3visible = !pwd3visible)"
+                      @click:append="() => (pwd3visible = !pwd3visible)"
                       :type="pwd3visible ? 'text':'password'"
                       required dark
                     ></v-text-field>
