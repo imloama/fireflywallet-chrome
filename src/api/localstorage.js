@@ -22,12 +22,14 @@ export function deleteFile(file){
 // read file into string
 export function readFile(key){
   return new Promise((resolve,reject)=>{
-    if(window.chrome){
+    if(window.chrome && window.chrome.storage){
+      console.log('------read from chrome.storage.local---')
       window.chrome.storage.local.get(key,value=>{
         let v = value[key]
         resolveValue(value,resolve,reject);  
       })      
     }else{
+      console.log('------read from localstorage----')
       let value = localStorage.getItem(key)
       resolveValue(value,resolve,reject);
     }
@@ -55,7 +57,7 @@ export function saveFile(key,value){
         value = JSON.stringify(value)
       }
       value = Base64.encode(value)
-      if(window.chrome){
+      if(window.chrome && window.chrome.storage){
         let items = {};
         items[key] = value;
         window.chrome.storage.local.set(items, (value)=>{

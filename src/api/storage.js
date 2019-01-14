@@ -106,7 +106,7 @@ export function readTradePairData(){
 }
 
 function passwordHash(password){
-  let hash = sjcl.hash.sha512.hash(password)
+  let hash = sjcl.hash.sha256.hash(password)
   return sjcl.codec.hex.fromBits(hash)
 }
 
