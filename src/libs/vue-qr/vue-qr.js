@@ -1,6 +1,7 @@
 const uuidv4 = require('uuid/v4')
 import { toBoolean } from './util.js'
-let AwesomeQR = require('../awesome-qr/awesome-qr');
+import AwesomeQR from '../awesome-qr/awesome-qr'
+
 export default {
   props: [
     'text',
@@ -80,6 +81,7 @@ export default {
     },
     render(img, logoImg) {
       const that = this
+      console.log(AwesomeQR)
       new AwesomeQR().create({
         text: that.text,
         size: that.size || 200,

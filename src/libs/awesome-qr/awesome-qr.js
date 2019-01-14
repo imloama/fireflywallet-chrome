@@ -2412,4 +2412,5 @@ require('./gif');
     }
 
 
-export default new AwesomeQRCode();
+// export default new AwesomeQRCode();
+export default AwesomeQRCode;
