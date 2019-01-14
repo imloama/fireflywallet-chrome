@@ -5,8 +5,14 @@ var Base64 = require('js-base64').Base64
 export function deleteFile(file){
   return new Promise((resolve,reject)=>{
     try{
-      localStorage.removeItem(file)
-      resolve()
+      if(window.chrome){
+        window.chrome.storage.local.removeItem(file,()=>{
+          resolve(true)
+        })      
+      }else{
+        localStorage.removeItem(file)
+        resolve(true)
+      }
     }catch(err){
       reject(err)
     }
@@ -16,18 +22,29 @@ export function deleteFile(file){
 // read file into string
 export function readFile(key){
   return new Promise((resolve,reject)=>{
-    let value = localStorage.getItem(key)
-    if(value){
-      try{
-        value = Base64.decode(value)
-        resolve(value)
-      }catch(err){
-        reject(err)
-      }
+    if(window.chrome){
+      window.chrome.storage.local.get(key,value=>{
+        let v = value[key]
+        resolveValue(value,resolve,reject);  
+      })      
     }else{
-      reject('Error.NoData')
+      let value = localStorage.getItem(key)
+      resolveValue(value,resolve,reject);
     }
   });
+}
+
+function resolveValue(value,resolve,reject){
+  if(value){
+    try{
+      value = Base64.decode(value)
+      resolve(value)
+    }catch(err){
+      reject(err)
+    }
+  }else{
+    reject('Error.NoData')
+  }
 }
 
 // save file content
@@ -38,8 +55,16 @@ export function saveFile(key,value){
         value = JSON.stringify(value)
       }
       value = Base64.encode(value)
-      localStorage.setItem(key,value)
-      resolve()
+      if(window.chrome){
+        let items = {};
+        items[key] = value;
+        window.chrome.storage.local.set(items, (value)=>{
+          resolve(true)
+        });
+      }else{
+        localStorage.setItem(key,value)
+        resolve()
+      }    
     }catch(err){
       reject(err)
     }

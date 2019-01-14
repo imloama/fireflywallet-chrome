@@ -15,6 +15,7 @@ export const FILENAME_APP_SETTING = 'appsetting.firefly'
 export const FILENAME_MESSAGE = 'msg.firefly'
 export const FILENAME_MESSAGE_READ = 'read_msg.firefly'
 export const FILENAME_TRADEPAIR = 'tradepair.firefly'
+var sjcl = require('sjcl')
 
 const LOCK_KEY = 'ilovefirefly'
 
@@ -104,8 +105,13 @@ export function readTradePairData(){
   return readByEncrypt(FILENAME_TRADEPAIR)
 }
 
+function passwordHash(password){
+  let hash = sjcl.hash.sha512.hash(password)
+  return sjcl.codec.hex.fromBits(hash)
+}
 
 export function readByEncrypt(file,password = LOCK_KEY){
+  password = passwordHash(password);
   let read = localstorage.readFile(file);
   return read.then(value=>{
     console.log('read value')
@@ -131,6 +137,7 @@ export function readByEncrypt(file,password = LOCK_KEY){
 
 export function saveByEncrypt(file,value,password = LOCK_KEY){
   value = JSON.stringify(value)
+  password = passwordHash(password);
   value = encrypt(password, value)
   return localstorage.saveFile(file,value)
 }
