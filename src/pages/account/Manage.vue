@@ -19,11 +19,6 @@
         <div class="card-content" slot="card-content">
           <div class="account-row"  v-for="(item,index) in accounts" :key="index" >
             <div class="flex-row account-wrapper" >
-              <div class="flex1">
-                <div class="avatar">
-                  <i class="iconfont icon-erweima"></i>
-                </div>
-              </div>
               <div class="name flex2" @click.stop="info(item)" >
                 {{item.name}}
                 <span class="address label">{{item.address | shortaddress}}</span>
