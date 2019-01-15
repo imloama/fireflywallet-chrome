@@ -3,16 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const BUNDLE_DIR = path.join(__dirname, '../dist');
-const bundles = [
-  'js/background.js',
-  "js/chromereload.js",
-  "js/ffw.js",
-  //'popup/popup.js',
-  //'options/options.js',
-  "js/app.js"
-];
-
+const BUNDLE_DIR = path.join(__dirname, '../dist/js');
 const evalRegexForProduction = /;([a-z])=function\(\){return this}\(\);try{\1=\1\|\|Function\("return this"\)\(\)\|\|\(0,eval\)\("this"\)}catch\(t\){"object"==typeof window&&\(\1=window\)}/g;
 const evalRegexForDevelopment = /;\\r\\n\\r\\n\/\/ This works in non-strict mode(?:.){1,304}/g;
 
@@ -48,10 +39,16 @@ const removeEvals = (file) => {
 };
 
 const main = () => {
-  bundles.forEach(bundle => {
-    removeEvals(path.join(BUNDLE_DIR, bundle))
-      .then(() => console.info(`Bundle ${bundle}: OK`))
-      .catch(console.error);
+  fs.readdir(BUNDLE_DIR, (err,files)=>{
+    if(err){
+      console.error(err);
+      return;
+    }
+    files.forEach(bundle => {
+      removeEvals(path.join(BUNDLE_DIR, bundle))
+        .then(() => console.info(`Bundle ${bundle}: OK`))
+        .catch(console.error);
+    });
   });
 };
 

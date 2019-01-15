@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --report",
+    "build": "vue-cli-service build",
     "dev": "vue-cli-service build --watch",
-    "build-zip": "node scripts/build-zip.js",
-    "build:chrome": "cross-env NODE_ENV=production webpack --config scripts/chrome-webpack-config.js --verbose"
+    "build-zip": "node scripts/build-zip.js"
   },
   "dependencies": {
     "animate.css": ">3.5.2",

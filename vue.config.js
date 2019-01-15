@@ -6,6 +6,8 @@ function resolve (dir) {
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { version } = require('./package.json');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackShellPlugin = require('webpack-shell-plugin');
+// const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 
 module.exports = {
     publicPath:"",
@@ -75,6 +77,12 @@ module.exports = {
                     {from:'src/icons', to: 'icons'}
                   ])
               );
+        
+        //支持打包后处理eval
+        config.plugin('WebpackShellPlugin')
+                  .use(new WebpackShellPlugin({
+                    onBuildEnd: ['node scripts/remove-evals.js'],
+                  }));
         
     }
 
