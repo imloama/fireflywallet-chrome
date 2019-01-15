@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "dev": "vue-cli-service build --watch",
+    "serve": "cross-env PLATFORM=chrome vue-cli-service serve",
+    "build": "cross-env PLATFORM=chrome vue-cli-service build",
+    "dev": "cross-env PLATFORM=chrome BUILDTYPE=dev vue-cli-service build",
     "build-zip": "node scripts/build-zip.js"
   },
   "dependencies": {

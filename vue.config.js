@@ -18,7 +18,7 @@ module.exports = {
         //     filename: 'index.html',
         // },
     },
-    productionSourceMap: false,
+    // productionSourceMap: false,
     runtimeCompiler: true,
     filenameHashing: false,
     chainWebpack: (config)=>{
@@ -28,9 +28,11 @@ module.exports = {
             .set('components',resolve('src/components'));
         // config.resolve.extensions: ['.js', '.vue', '.json',".css"],
 
-        // config.externals({
-        //     'es6-promise': 'Promise',
-        // })
+        let platform = process.env.PLATFORM
+        let dev = process.env.BUILDTYPE//dev表示为开发模式
+        if(dev==='dev'){
+            config.optimization.minimize(false);
+        }
 
         config
             .entry('index')
