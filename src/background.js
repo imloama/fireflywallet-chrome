@@ -4,7 +4,7 @@ global.browser = require('webextension-polyfill');
 
 // 从缓存中获取数据
 
-
+console.log('from background')
 //alert(`Hello ${store.getters.foo}!`);
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
@@ -15,9 +15,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 chrome.browserAction.onClicked.addListener(function (tab) {
   //chrome.tabs.create({ url: chrome.runtime.getURL('result.htm') });
-  // alert('on tab')
+  console.log('on tab');
   // chrome.tabs.create({url:"chrome://newtab"})
-  chrome.tabs.create({url: chrome.runtime.getURL('main.html') })
+  chrome.tabs.create({url: chrome.runtime.getURL('index.html') });
 });
 
 /*

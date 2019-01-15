@@ -40,7 +40,7 @@
   ],
   "homepage_url":"https://fchain.io",
   "chrome_url_overrides":{
-    
+    "newtab":"index.html"
   },
   "content_scripts":[
     {

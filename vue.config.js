@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { version } = require('./package.json');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');
-// const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
+const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 
 module.exports = {
     publicPath:"",
@@ -18,7 +18,7 @@ module.exports = {
         //     filename: 'index.html',
         // },
     },
-    // productionSourceMap: false,
+    productionSourceMap:  process.env.BUILDTYPE === 'dev',
     runtimeCompiler: true,
     filenameHashing: false,
     chainWebpack: (config)=>{
@@ -29,8 +29,8 @@ module.exports = {
         // config.resolve.extensions: ['.js', '.vue', '.json',".css"],
 
         let platform = process.env.PLATFORM
-        let dev = process.env.BUILDTYPE//dev表示为开发模式
-        if(dev==='dev'){
+        let isdev = process.env.BUILDTYPE === 'dev'//dev表示为开发模式
+        if(isdev){
             config.optimization.minimize(false);
         }
 
@@ -85,7 +85,10 @@ module.exports = {
                   .use(new WebpackShellPlugin({
                     onBuildEnd: ['node scripts/remove-evals.js'],
                   }));
-        
+        if(isdev && platform === 'chrome'){
+            config.plugin('reloadChromeExtension')
+                .use(new ChromeExtensionReloader())
+        }
     }
 
 }
