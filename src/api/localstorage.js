@@ -4,14 +4,8 @@ var Base64 = require('js-base64').Base64
 export function deleteFile(file){
   return new Promise((resolve,reject)=>{
     try{
-      if(window.chrome){
-        window.chrome.storage.local.removeItem(file,()=>{
-          resolve(true)
-        })      
-      }else{
-        localStorage.removeItem(file)
-        resolve(true)
-      }
+      localStorage.removeItem(file)
+      resolve(true)
     }catch(err){
       reject(err)
     }
@@ -21,17 +15,8 @@ export function deleteFile(file){
 // read file into string
 export function readFile(key){
   return new Promise((resolve,reject)=>{
-    if(window.chrome && window.chrome.storage){
-      console.log('------read from chrome.storage.local---')
-      window.chrome.storage.local.get(key,value=>{
-        let v = value[key]
-        resolveValue(value,resolve,reject);  
-      })      
-    }else{
-      console.log('------read from localstorage----')
-      let value = localStorage.getItem(key)
-      resolveValue(value,resolve,reject);
-    }
+    let value = localStorage.getItem(key)
+    resolveValue(value,resolve,reject);
   });
 }
 
@@ -56,16 +41,8 @@ export function saveFile(key,value){
         value = JSON.stringify(value)
       }
       value = Base64.encode(value)
-      if(window.chrome && window.chrome.storage){
-        let items = {};
-        items[key] = value;
-        window.chrome.storage.local.set(items, (value)=>{
-          resolve(true)
-        });
-      }else{
-        localStorage.setItem(key,value)
-        resolve()
-      }    
+      localStorage.setItem(key,value)
+      resolve()
     }catch(err){
       reject(err)
     }
