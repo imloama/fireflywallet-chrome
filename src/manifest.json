@@ -25,8 +25,8 @@
   },
   "background": {
     "scripts": [
-      "background.js",
-      "chromereload.js"
+      "js/background.js",
+      "js/chromereload.js"
     ]
   },
   "permissions":[
@@ -39,12 +39,12 @@
   ],
   "homepage_url":"https://fchain.io",
   "chrome_url_overrides":{
-    "newtab":"index.html"
+    
   },
   "content_scripts":[
     {
       "matches": ["<all_urls>"],
-      "js": ["ffw.js"],
+      "js": ["js/ffw.js"],
       "run_at": "document_start"
     }
   ]

@@ -30,24 +30,24 @@ const actions = {
   // 加载钱包设置
   async loadAppSetting ({ commit }) {
     let data = await readAppSetting()
-    let messages = app.$i18n.messages
-    if(!messages[data.locale.key]){
-      let filename = MOMENT_LANGUAGES[data.locale.key]
-      const res = await import(`../../locales/${filename}.json`)
-      app.$i18n.setLocaleMessage(data.locale.key, res)
-    }
+    // let messages = app.$i18n.messages
+    // if(!messages[data.locale.key]){
+    //   let filename = MOMENT_LANGUAGES[data.locale.key]
+    //   const res = await import(`../../locales/${filename}.json`)
+    //   app.$i18n.setLocaleMessage(data.locale.key, res)
+    // }
     commit(CHANGE_APPSETTING_STATE, data)
   },
   // 保存钱包设置
   async saveAppSetting( { commit, state }, data ) {
-    if(data.locale){
-      let messages = app.$i18n.messages
-      if(!messages[data.locale.key]){
-        let filename = MOMENT_LANGUAGES[data.locale.key]
-        const res = await import(`../../locales/${filename}.json`)
-        app.$i18n.setLocaleMessage(data.locale.key, res)
-      }
-    }
+    // if(data.locale){
+    //   let messages = app.$i18n.messages
+    //   if(!messages[data.locale.key]){
+    //     let filename = MOMENT_LANGUAGES[data.locale.key]
+    //     const res = await import(`../../locales/${filename}.json`)
+    //     app.$i18n.setLocaleMessage(data.locale.key, res)
+    //   }
+    // }
     await save(Object.assign({}, state, data))
     commit(CHANGE_APPSETTING_STATE, data)
   },
@@ -61,12 +61,12 @@ const actions = {
   },
   // 修改语言
   async setLocale({dispatch,commit}, locale){
-    let messages = app.$i18n.messages
-    if(!messages[locale.key]){
-      let filename = MOMENT_LANGUAGES[locale.key]
-      const res = await import(`../../locales/${filename}.json`)
-      app.$i18n.setLocaleMessage(locale.key, res)
-    }
+    // let messages = app.$i18n.messagess
+    // if(!messages[locale.key]){
+    //   let filename = MOMENT_LANGUAGES[locale.key]
+    //   const res = await import(`../../locales/${filename}.json`)
+    //   app.$i18n.setLocaleMessage(locale.key, res)
+    // }
     await dispatch('saveAppSetting', {locale})
   },
   // 修改horizon配置

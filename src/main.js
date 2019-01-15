@@ -1,7 +1,7 @@
 // main
 import Vue from 'vue'
 //import Vuetify from 'vuetify'
-import 'babel-polyfill'
+// import 'babel-polyfill'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -49,6 +49,5 @@ export const app =new Vue({
   router,
   store,
   i18n,
-  template: '<App/>',
-  components: { App }
+  render: h => h(App),
 })

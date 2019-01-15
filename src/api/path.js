@@ -1,7 +1,6 @@
 import StellarSdk from 'stellar-sdk'
 import { getServer }  from './server'
 import { getAsset } from './assets'
-var Promise = require('es6-promise').Promise
 
 export function pathAssets(source,destination,destinationAsset_code,destinationAsset_issuer,destinationAmount){
   let asset = getAsset(destinationAsset_code, destinationAsset_issuer);

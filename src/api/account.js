@@ -6,7 +6,6 @@ import { encrypt, decrypt } from './crypt'
 import { importAccountFromData } from './qr'
 import { getAsset, isNativeAsset } from './assets'
 import { BASE_RESERVE } from './gateways'
-var Promise = require('es6-promise').Promise
 // import StellarHDWallet from '../libs/stellar-hd-wallet/src/stellar-hd-wallet'
 import StellarHDWallet from 'stellar-hd-wallet'
 

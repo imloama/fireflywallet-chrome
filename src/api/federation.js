@@ -1,5 +1,4 @@
 import StellarSdk from 'stellar-sdk'
-var Promise = require('es6-promise').Promise
 
 
 export function federation(fed_url) {

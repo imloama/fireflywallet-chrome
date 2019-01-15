@@ -2,7 +2,6 @@
  * storage use file
  */
 import {encrypt,decrypt} from './crypt'
-var Promise = require('es6-promise').Promise
 //import * as fileStorage from './filestorage'
 import * as localstorage from './localstorage'
 // import * as nedbstorage from './nedb_storage'

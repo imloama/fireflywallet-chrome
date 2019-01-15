@@ -2,7 +2,6 @@ import StellarSdk from 'stellar-sdk'
 import { getServer }  from './server'
 import { findAccount } from './storage'
 import { encrypt, decrypt } from './crypt'
-var Promise = require('es6-promise').Promise
 
 // fetch payments 
 // return page

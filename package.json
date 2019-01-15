@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --report",
     "dev": "vue-cli-service build --watch",
-    "build-zip": "node scripts/build-zip.js"
+    "build-zip": "node scripts/build-zip.js",
+    "build:chrome": "cross-env NODE_ENV=production webpack --config scripts/chrome-webpack-config.js --verbose"
   },
   "dependencies": {
     "animate.css": ">3.5.2",
@@ -52,9 +53,11 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.3.0",
     "@vue/cli-service": "^3.3.0",
+    "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^4.6.0",
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "^2.1.0",
+    "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-template-compiler": "^2.5.21",

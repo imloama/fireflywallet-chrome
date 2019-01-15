@@ -4,7 +4,6 @@ import axios from 'axios'
 import { getServer} from './server'
 import { federation } from './federation'
 import StellarSdk from 'stellar-sdk'
-var Promise = require('es6-promise').Promise
 
 /**
  * 根据域名查询到相应的充值提示信息

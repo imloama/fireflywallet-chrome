@@ -10,14 +10,15 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     publicPath:"",
     pages:{
-        app:{
-            entry: 'src/main.js',
-            template: 'public/index.html',
-            filename: 'index.html'
-        },
+        // index:{
+        //     entry: 'src/main.js',
+        //     template: 'public/index.html',
+        //     filename: 'index.html',
+        // },
     },
     productionSourceMap: false,
     runtimeCompiler: true,
+    filenameHashing: false,
     chainWebpack: (config)=>{
         config.resolve.alias
             // .set('vue', resolve('node_modules')+'/vue/dist/vue.esm.js')
@@ -25,7 +26,14 @@ module.exports = {
             .set('components',resolve('src/components'));
         // config.resolve.extensions: ['.js', '.vue', '.json',".css"],
 
+        // config.externals({
+        //     'es6-promise': 'Promise',
+        // })
+
         config
+            .entry('index')
+            .add(resolve('src')+'/main.js')
+            .end()
             .entry('background')
             .add(resolve('src')+'/background.js')
             .end()
@@ -36,15 +44,15 @@ module.exports = {
             .add(resolve('src')+'/ffw/ffw.js')
             .end()
             .output
-            .filename('[name].js');
+            .filename('js/[name].js');
         
         config.plugins.delete('html')
-        // config.plugins.delete('preload')
-        // config.plugins.delete('prefetch')
+        config.plugins.delete('preload')
+        config.plugins.delete('prefetch')
 
         config.plugin('html')
             .use(new HtmlWebpackPlugin({
-                excludeChunks: ['background'],
+                excludeChunks: ['background','chromereload','ffw'],
                 template: 'public/index.html',
                 filename: 'index.html'
             }));

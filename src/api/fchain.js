@@ -85,7 +85,7 @@ const FCHAIN_FEED_URL = 'https://fchain.io/feed/'
 
 export function getFchainRss(){
     let t = new Date().getTime()
-    let url = CORS_PROXY +FCHAIN_FEED_URL +'?r='+t
+    let url = FCHAIN_FEED_URL +'?r='+t
     return axios.get(url)
       .then(response=>{
         let data = response.data

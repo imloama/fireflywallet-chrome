@@ -5,9 +5,9 @@ const fs = require('fs');
 
 const BUNDLE_DIR = path.join(__dirname, '../dist');
 const bundles = [
-  'background.js',
-  "chromereload.js",
-  "ffw.js",
+  'js/background.js',
+  "js/chromereload.js",
+  "js/ffw.js",
   //'popup/popup.js',
   //'options/options.js',
   "js/app.js"

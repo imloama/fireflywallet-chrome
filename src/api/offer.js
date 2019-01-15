@@ -3,7 +3,6 @@ import StellarSdk from 'stellar-sdk'
 import {getServer} from './server'
 import { address as getAddress } from './account'
 import { getAsset } from './assets'
-var Promise = require('es6-promise').Promise
 
 // query address offers
 // return Promise

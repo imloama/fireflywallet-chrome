@@ -22,6 +22,18 @@ import PinLock from '@/pages/PinLock'
 import dapp from './dapp';
 import Explorer from '@/pages/explorer.vue'
 
+// import TermsOfService from  '../pages/TermsOfService.vue'
+// import ImportAccount from '../pages/ImportAccount.vue'
+// import CreateAccountByMnemonic from '../pages/CreateAccountByMnemonic.vue'
+// import CreateAccountReady from '../pages/CreateAccountReady.vue'
+// import AutoFund from '../pages/AutoFund.vue'
+// import AskForFund from '../pages/AskForFund.vue'
+// import History from '../pages/History.vue'
+// import Transaction from '../pages/Transaction'
+// import AutoFundHelp from '../pages/AutoFundHelp.vue'
+// import Settings from '../pages/settings/Settings.vue'
+
+
 Vue.use(Router)
 
 

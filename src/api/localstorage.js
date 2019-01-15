@@ -1,5 +1,4 @@
 // 使用localstorage保存数据，如果是浏览器环境下
-var Promise = require('es6-promise').Promise
 var Base64 = require('js-base64').Base64
 // delete file
 export function deleteFile(file){

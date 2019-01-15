@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { resolveByFedAddress } from './federation'
-var Promise = require('es6-promise').Promise
 import StellarSdk from 'stellar-sdk'
 
 export const FCHAIN_API = "https://api.fchain.io"
