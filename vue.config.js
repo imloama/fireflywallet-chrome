@@ -22,6 +22,9 @@ module.exports = {
     runtimeCompiler: true,
     filenameHashing: false,
     chainWebpack: (config)=>{
+
+        config.target('node');
+
         config.resolve.alias
             // .set('vue', resolve('node_modules')+'/vue/dist/vue.esm.js')
             .set('@', resolve('src'))
@@ -85,10 +88,12 @@ module.exports = {
                   .use(new WebpackShellPlugin({
                     onBuildEnd: ['node scripts/remove-evals.js'],
                   }));
-        if(isdev && platform === 'chrome'){
-            config.plugin('reloadChromeExtension')
-                .use(new ChromeExtensionReloader())
-        }
+        // if(isdev && platform === 'chrome'){
+        //     config.plugin('reloadChromeExtension')
+        //         .use(new ChromeExtensionReloader({
+        //             entries:{ background: 'background'}
+        //         }))
+        // }
     }
 
 }

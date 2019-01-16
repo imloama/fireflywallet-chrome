@@ -26,17 +26,21 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
     "scripts": [
-      "js/background.js",
-      "js/chromereload.js"
-    ]
+      "js/chromereload.js",
+      "js/background.js"
+    ],
+    "persistent": true
   },
   "permissions":[
     "tabs",
     "contextMenus",
     "notifications",
     "webRequest",
+    "clipboardWrite",
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "http://*/*",
+		"https://*/*"
   ],
   "homepage_url":"https://fchain.io",
   "chrome_url_overrides":{
@@ -44,9 +48,10 @@
   },
   "content_scripts":[
     {
-      "matches": ["<all_urls>"],
+      "matches": [ "file://*/*","http://*/*","https://*/*"],
       "js": ["js/ffw.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ]
 }
