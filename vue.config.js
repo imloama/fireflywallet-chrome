@@ -50,6 +50,9 @@ module.exports = {
             .entry('ffw')
             .add(resolve('src')+'/ffw/ffw.js')
             .end()
+            .entry('ffwmain')
+            .add(resolve('src')+'/ffw/main.js')
+            .end()
             .output
             .filename('js/[name].js');
         
@@ -59,9 +62,16 @@ module.exports = {
 
         config.plugin('html')
             .use(new HtmlWebpackPlugin({
-                excludeChunks: ['background','chromereload','ffw'],
+                excludeChunks: ['background','chromereload','ffw','ffwmain'],
                 template: 'public/index.html',
                 filename: 'index.html'
+            }));
+
+        config.plugin('html2')
+            .use(new HtmlWebpackPlugin({
+                excludeChunks: ['background','chromereload','ffw','index'],
+                template: 'public/index.html',
+                filename: 'ffwmain.html'
             }));
 
         config.plugin('CopyWebpackPlugin')

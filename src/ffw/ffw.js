@@ -1,3 +1,8 @@
+/**
+ 与background.js通信，打开相应的接口界面
+// 测试账户： 
+// 私钥：SBPDLIPMKF54CYX6KOCYBKOKG73CGNGZZUXVV6LH43N55DETCUZOWFIB ， 
+// 公钥: GAYHQQT37MXPVGAY7RBBC63CI7BM55YNHPTS4UD3YFK5IE6G3FFFEBVZ
 // 第三方应用接口内容
 // 1. 获取G地址
 // 2. 支付
@@ -6,192 +11,48 @@
 // 5. 备份非敏感数据
 // 6. 恢复非敏感数据
 // 7. 授信
-import pkg from '../../package.json'
-var sjcl = require('sjcl')
+// 向页面注入JS
+ */ 
+
+ // 接收来自后台的消息
+window.chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
+	console.log('收到来自 ' + (sender.tab ? "content-script(" + sender.tab.url + ")" : "popup或者background") + ' 的消息：', request);
+	if(request.cmd == 'update_font_size') {
+		var ele = document.createElement('style');
+		ele.innerHTML = `* {font-size: ${request.size}px !important;}`;
+		document.head.appendChild(ele);
+	}
+	else {
+		// tip(JSON.stringify(request));
+		sendResponse('我收到你的消息了：'+JSON.stringify(request));
+	}
+});
+
+// 主动发送消息给后台
+// 要演示此功能，请打开控制台主动执行sendMessageToBackground()
+function sendMessageToBackground(message) {
+	window.chrome.runtime.sendMessage({greeting: message || '你好，我是content-script呀，我主动发消息给后台！'}, function(response) {
+    //tip('收到来自后台的回复：' + response);
+    console.log('-----from background----');
+	});
+};
 
 
-export const FFW_EVENT_TYPE_PAY = 'pay'
-export const FFW_EVENT_TYPE_PATHPAYMENT = 'pathPayment'
-export const FFW_EVENT_TYPE_SIGN = 'sign'
-export const FFW_EVENT_TYPE_BACKUP = 'backup'
-export const FFW_EVENT_TYPE_RECOVERY = 'recovery'
-export const FFW_EVENT_TYPE_TRUST = 'trust'
-export const FFW_EVENT_TYPE_SIGNXDR = 'signXDR'
-export const FFW_EVENT_TYPE_SCAN = 'scan'
-export const FFW_EVENT_TYPE_SHARE = 'share'
-export const FFW_EVENT_TYPE_BALANCES = 'balances'
+window.document.addEventListener('DOMContentLoaded', ()=>{
+  
+});
 
-export function FFWScript(address, data = {}, isIos = false, platform, locale = 'zh_cn'){
-  // return [
-  //   'if(!window.FFW){'
-  //     ,'window.FFW = {};'
-  //     ,'FFW.address="',address,'";'
-  //     ,'FFW.pay = function(destination,'
-
-
-  //   ,'};'
-  // ].join('')
-  let appdata = Object.assign({contacts:[], myaddresses:[]},data);
-  let version = pkg.version
-  // let uuid = device.uuid
-  // if(uuid){
-  //   let uuidhash = sjcl.hash.sha256.hash(uuid)
-  //   uuid = sjcl.codec.hex.fromBits(uuidhash)
-  // }
-  let uuid = 'unset'
-  let contactstr = JSON.stringify(appdata.contacts)
-  let myaddressstr = JSON.stringify(appdata.myaddresses)
-  return `if(!window.FFW){
-      window.FFW = {};
-      FFW.version = "${version}";
-      FFW.platform = "${platform}";
-      FFW.address = "${address}";
-      FFW.contacts = ${contactstr};
-      FFW.myaddresses = ${myaddressstr};
-      FFW.uuid = "${uuid}";
-      FFW.locale = "${locale}";
-      FFW.callbackObjs = {}
-
-      FFW.addCallback = function(id,fn){
-        console.log('----addCallback---' + id + ','+fn)
-        FFW.callbackObjs[id] = fn;
-      };
-
-
-      FFW.callback = function(id, data){
-        console.log('callbackObjs:' + JSON.stringify(FFW.callbackObjs))
-
-        var fn = FFW.callbackObjs[id];
-        if(fn === undefined){
-          fn = window[id];
-        }
-        if(fn === undefined){
-          throw new Error('no callback function');
-          return;
-        }
-        fn.apply(this,[data]);
-        delete FFW.callbackObjs[id]; 
-      };
-
-      FFW.balances = function(callback){
-        var params = { type:'balances'};
-        params = genParams(params, callback);
-        console.log(JSON.stringify(params));
-      };
-
-      FFW.pay = function(data,callback){
-        var params = { type:'pay',destination: data.destination, code: data.code, issuer: data.issuer, amount: data.amount, memo_type: data.memo_type, memo: data.memo};
-        params = genParams(params, callback);
-        try{
-        //  ipcRenderer.sendToHost(JSON.stringify(params));  
-        // window.parent.postMessage(JSON.stringify(params));  
-         console.log(JSON.stringify(params)) 
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-      FFW.pathPayment = function(data,callback){ 
-        var params = { type:'pathPayment',destination: data.destination, code: data.code, issuer: data.issuer, amount: data.amount, memo_type: data.memo_type, memo: data.memo };
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-
-      FFW.sign = function(data,callback){
-        var params = { type: 'sign', data: data};
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params)); 
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-
-      FFW.signXDR = function(data,message,callback){
-        var params = { type: 'signXDR', data: data, message: message };
-        params = genParams(params, callback);
-        try{
-          console.log('----ffw.pay----')
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-
-
-      FFW.backup = function(callback){
-        var params = { type: 'backup'};
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-      FFW.recovery = function(data,callback){
-        var params = { type: 'recovery', data: data };
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-      FFW.trust = function(code,issuer,callback){
-        var params = { type: 'trust', code: code, issuer: issuer };
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-
-      FFW.scan = function(callback){
-        var params = { type: 'scan'};
-        params = genParams(params, callback);
-        FFW.callback(params['callback'] ,{code:"fail",message:"unsupport"});
-      };
-
-      FFW.share = function(options,callback){
-        var params = { type: 'scan',options:options};
-        params = genParams(params, callback);
-        FFW.callback(params['callback'] ,{code:"fail",message:"unsupport"});
-      };
-
-      FFW.fireEvent = function(type, data, callback){
-        var params = { type: type, data: data};
-        params = genParams(params, callback);
-        try{
-          console.log(JSON.stringify(params));
-        }catch(err){
-          console.error(err);
-          FFW.callback(params['callback'] ,{code:"fail",message:err.message});
-        }
-      };
-
-      function genParams(param, callback){
-        var params = Object.assign({}, param);
-        if(typeof callback === 'function'){
-          var id = 'FFW_CB_' + new Date().getTime();
-          FFW.addCallback(id, callback);
-          params['callback'] = id;
-        }else{
-          params['callback'] = callback;
-        }
-        return params;
-      };
-      
-    };`
-}
-
+//接收网页发出的请求
+window.addEventListener("message", function(message){
+  let data = message.data
+  if(data && data.method && 'FireFly' === data.host){
+    let method = data.method;
+    let params = data.params;
+    params.method = method;
+    params.type = 'openffwapi';
+    //向后台发出消息
+    window.chrome.runtime.sendMessage(params,response => {
+      console.log(response);
+    });
+  }
+}, false);
