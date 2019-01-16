@@ -1,23 +1,23 @@
 // import store from './store';
 
-global.browser = require('webextension-polyfill');
+// global.browser = require('webextension-polyfill');
 
 // 从缓存中获取数据
 
 console.log('from background')
 //alert(`Hello ${store.getters.foo}!`);
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+window.chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.method === 'showAlert') {
-    chrome.tabs.create({url:"chrome://newtab"})
+    window.chrome.tabs.create({url:"chrome://newtab"})
   }
 });
 
-chrome.browserAction.onClicked.addListener(function (tab) {
+window.chrome.browserAction.onClicked.addListener(function (tab) {
   //chrome.tabs.create({ url: chrome.runtime.getURL('result.htm') });
   console.log('on tab');
   // chrome.tabs.create({url:"chrome://newtab"})
-  chrome.tabs.create({url: chrome.runtime.getURL('index.html') });
+  window.chrome.tabs.create({url: chrome.runtime.getURL('index.html') });
 });
 
 /*
