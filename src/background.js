@@ -1,4 +1,9 @@
 // import store from './store';
+// import pkg from '../package.json'
+
+const version = "0.0.1";
+const FILENAME_ACCOUNTS = 'accounts.firefly'
+const FILENAME_APP_SETTING = 'appsetting.firefly'
 
 // global.browser = require('webextension-polyfill');
 
@@ -21,6 +26,23 @@ var urlEncode = function(param, key, encode) {
   return paramStr;
 }
 
+function getSelectedAccount(){
+  let accounts = window.localStorage.getItem(FILENAME_ACCOUNTS)
+  if(accounts){
+    accounts = JSON.parse(window.atob(accounts));
+    let selected = accounts.selected;
+    return accounts.data[selected];
+  }
+  return null;
+}
+
+function getAppSettings(){
+  let settings = window.localStorage.getItem(FILENAME_APP_SETTING);
+  if(!settings)return null;
+  settings = JSON.parse(window.atob(settings));
+  return settings;
+}
+
 //接收来自于ffw的消息
 window.chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   console.log('---get message----');
@@ -32,6 +54,15 @@ window.chrome.runtime.onMessage.addListener(function(message, sender, sendRespon
   }
   if(message.type==='apicallback'){//向ffw.js发消息
 
+    return;
+  }
+  if(message.type ==='init'){
+    let account = getSelectedAccount();
+    let settings = getAppSettings();
+    let address = account ? account.address:null;
+    let locale = settings ? settings.locale.key:null;
+    sendResponse({version, address, locale});
+    return;
   }
 });
 
@@ -41,7 +72,7 @@ window.chrome.browserAction.onClicked.addListener(function (tab) {
 
 function openffwapi(params, callback){
   chrome.windows.create({
-    url: 'ffwmain.html'+params,
+    url: 'ffwmain.html?'+params,
     type: 'popup',
     width: 550,
     height: 640
@@ -56,16 +87,17 @@ function callffwapi(params){
 window.chrome.contextMenus.create({
   title: "使用萤火钱包发送到：%s",
   contexts: ['selection'], // 只有当选中文字时才会出现此右键菜单
-  onClick: function(params){
+  onclick: function(params){
     let address = params.selectionText;
-    let params = '?method=send&target'+address
-    openffwapi(params,()=>{});
+    let urlparams = '?method=pay&target='+address
+    openffwapi(urlparams,()=>{});
   }
-},{
+});
+window.chrome.contextMenus.create({
   title: "查询资产：%s",
   contexts: ['selection'],
-  onClick: function(params){
+  onclick: function(params){
     let address = params.selectionText;
-    chrome.tabs.create({url: 'https://steexp.com/accounts/'+address});
+    chrome.tabs.create({url: 'https://steexp.com/account/'+address});
   }
-})
+});
