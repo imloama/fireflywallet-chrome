@@ -48,7 +48,7 @@ export function createAccount(accounts, address,value,password){
 }
 
 // write accounts
-export function saveAccounts(accounts){
+export function saveAccounts(accounts){        
   console.log('-------------save accounts----')
   console.log(accounts)
   return localstorage.saveFile(FILENAME_ACCOUNTS, accounts);
@@ -66,7 +66,7 @@ export function saveAccountData(address,value,password){
 
 // save app setting
 export function saveAppSetting(setting){
- return saveByEncrypt(FILENAME_APP_SETTING,setting)
+  return localstorage.saveFile(FILENAME_APP_SETTING, setting)
       .then(()=>{
         //重新设置server
         return new Promise((resolve,reject)=>{
@@ -82,8 +82,9 @@ export function saveAppSetting(setting){
 
 // read app setting
 export function readAppSetting(){
-  return readByEncrypt(FILENAME_APP_SETTING)
+  return localstorage.readFile(FILENAME_APP_SETTING)
     .then((settings)=>{
+      settings = JSON.parse(settings);
       //重新设置server
       return new Promise((resolve,reject)=>{
         try{
