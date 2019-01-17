@@ -16,14 +16,21 @@ module.exports = {
         //     entry: 'src/main.js',
         //     template: 'public/index.html',
         //     filename: 'index.html',
+        //     chunks: ['index']
         // },
+        // ffwmain:{
+        //     entry: 'src/ffw/main.js',
+        //     template: 'public/ffwmain.html',
+        //     filename: 'ffwmain.html',
+        //     chunks:['ffwmain']
+        // }
     },
     productionSourceMap:  process.env.BUILDTYPE === 'dev',
     runtimeCompiler: true,
     filenameHashing: false,
     chainWebpack: (config)=>{
 
-        config.target('node');
+        // config.target('node');
 
         config.resolve.alias
             // .set('vue', resolve('node_modules')+'/vue/dist/vue.esm.js')
@@ -51,7 +58,7 @@ module.exports = {
             .add(resolve('src')+'/ffw/ffw.js')
             .end()
             .entry('ffwmain')
-            .add(resolve('src')+'/ffw/main.js')
+            .add(resolve('src')+'/ffw/ffwmain.js')
             .end()
             .output
             .filename('js/[name].js');
@@ -70,7 +77,7 @@ module.exports = {
         config.plugin('html2')
             .use(new HtmlWebpackPlugin({
                 excludeChunks: ['background','chromereload','ffw','index'],
-                template: 'public/index.html',
+                template: 'public/ffwmain.html',
                 filename: 'ffwmain.html'
             }));
 

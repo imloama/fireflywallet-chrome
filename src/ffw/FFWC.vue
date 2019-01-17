@@ -2,19 +2,12 @@
 <template>
   <div class="page" dark >
 
-    <v-toolbar :height="`60px`" fixed dark class="primary itoolbar" dense :clipped-left='true'>
-        <v-toolbar-side-icon @click="showAccounts"></v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">{{$t('AppName')}}</v-toolbar-title>
-        <v-spacer></v-spacer>
-    </v-toolbar>
-
-    <accounts-nav :show="showaccountsview" @close="closeView"/>
-    
-    <sign v-if="appEventType === 'sign'&& !showPassword" 
+      ffwc 
+    <!-- <sign v-if="appEventType === 'sign'" 
         :data="appEventData.data" >
     </sign>
     
-    <send-asset v-if="(appEventType === 'pay' || appEventType === 'pathPayment')&& appEventData && !showPassword" 
+    <send-asset v-if="(appEventType === 'pay' || appEventType === 'pathPayment')&& appEventData" 
       :destination="appEventData.destination"
       :appname="appEventData.title"
       :asset_code="appEventData.code"
@@ -27,27 +20,26 @@
       @sendsuccess="sendAssetSuccess"
        ></send-asset>
     
-    <trust-line v-if="appEventType === 'trust' && appEventData&& !showPassword" 
+    <trust-line v-if="appEventType === 'trust' && appEventData" 
       :appname="appEventData.title" 
       :asset_code="appEventData.code"
       :asset_issuer="appEventData.issuer"
       @exit="exitTrustEvent" @success="successTrustEvent" />
 
-    <sign-x-d-r v-if="appEventType === 'signXDR' && appEventData&& !showPassword" 
+    <sign-x-d-r v-if="appEventType === 'signXDR' && appEventData" 
       :appname="appEventData.title"
       :message="appEventData.message"
       :xdr="appEventData.data"
       @exit="exitSignXDREvent"
       @success="successSignXDREvent"
       />
-    
-    <password-sheet :lock="`true`" v-if="showPassword"/>
+     -->
     
   </div>
 </template>
 
 <script>
-import { mapState, mapActions} from 'vuex'
+// import { mapState, mapActions} from 'vuex'
 import Card from '@/components/Card'
 import Loading from '@/components/Loading'
 import defaultsDeep  from 'lodash/defaultsDeep'
@@ -56,8 +48,8 @@ import RecoveryData from '@/components/dapp/RecoveryData'
 import TrustLine from '@/components/dapp/TrustLine'
 import BackUpData from '@/components/dapp/BackUpData'
 import SignXDR from '@/components/dapp/SignXDR'
-import PasswordSheet from '@/components/PasswrodSheet';
-import Sign from '@/components/Sign';
+import PasswordSheet from '@/components/PasswordSheet';
+import Sign from '@/components/dapp/Sign';
 import { FFWScript, FFW_EVENT_TYPE_PAY,FFW_EVENT_TYPE_PATHPAYMENT,FFW_EVENT_TYPE_SIGN
    ,FFW_EVENT_TYPE_BACKUP,FFW_EVENT_TYPE_RECOVERY,FFW_EVENT_TYPE_TRUST,
    FFW_EVENT_TYPE_SIGNXDR, FFW_EVENT_TYPE_SHARE,FFW_EVENT_TYPE_BALANCES,
@@ -74,34 +66,20 @@ export default {
       working: false,
       err: null,
       
-      appEventType: null,//接收到的appevent事件
-      appEventData: null,//接收的appevent的data
-
-      showaccountsview: false,
-
-      showPassword: false,
-
-
+      appEventType: null,
+      appEventData: null,
     }
   },
-   computed:{
-    ...mapState({
-      account: state => state.accounts.selectedAccount,
-      accountData: state => state.accounts.accountData,
-      islogin: state => (state.accounts.accountData.seed ? true : false),
-      myaddresses: state => state.app.myaddresses||[],
-      locale: state => state.app.locale,
-      balances: state=> state.account.data.balances,
-    }),
+  computed:{
   },
   beforeMount(){
     //从url地址获取相应的参数
     var url = location.search; //获取url中"?"符后的字串  
     console.log('url0-000---' + url);
-    this.appEventData = {};  
+    this.appEventData = {}; 
     if (url.indexOf("?") != -1) {  
       var str = url.substr(1);  
-      strs = str.split("&");  
+      let strs = str.split("&");  
       for(var i = 0; i < strs.length; i ++) { 
           let items = strs[i].split("=");
           let value = unescape(items[1]);
@@ -110,39 +88,30 @@ export default {
             }else{
                 this.appEventData[items[0]] = value;
             }
-        }  
+        }
     }
+    console.log(this.appEventType);
+    console.log(this.appEventData);
   },
   methods: {
-    ...mapActions(['getAccountInfo']),
-    
-    // getBalances(){
-    //   this.getAccountInfo(this.account.address)
-    //     .then(data=>{
-
-    //       this.doCallbackEvent(this.callbackData('success', 'success', this.balances))
-    //     })
-    //     .catch(err=>{
-    //       this.doCallbackEvent(this.callbackData('fail',err.message))
-    //     })
-    // },
-    // doSign(d){
-    //   //签名
-    //   let data = d.data
-    //   if(!isJson(data)){
-    //     return this.doCallbackEvent(this.callbackData('fail','data is invalid'))
-    //   }
-    //   if(data){
-    //     let cdata = signToBase64(this.accountData.seed, data)
-    //     console.log('---------------encrypt data---' + cdata)
-    //    // alert('sign---'+cdata)
-    //     this.doCallbackEvent(this.callbackData('success', 'success', cdata))
-    //   }else{
-    //    // alert('sign-fail--')
-    //     this.doCallbackEvent(this.callbackData('fail','no data to sign'))
-    //   }
-    // },
-    
+    getCurrentTabId(){
+      return new Promise((resolve,reject) => {
+        window.chrome.tabs.query({active:true, currentWindow: true}, tabs=>{
+          if(tabs.length == 0){
+            reject();
+            return;
+          }
+          resolve(tabs[0].id);
+        })
+      })
+    },
+    sendMessageToContentScript(params){
+      this.getCurrentTabId().then(tabid =>{
+        window.chrome.tabs.sendMessage(tabid,prams,response=>{
+          console.log("response---")
+        })
+      })
+    },
     doCallbackEvent(data){
       // alert('do callback event- ' + JSON.stringify(this.appEventData))
       if(this.appEventData && this.appEventData.callback){
@@ -150,9 +119,11 @@ export default {
           let cb = this.appEventData.callback
           let params = { type: 'apicallback', callback: cb, data: data}
           //window.chrome.runtime.sendMessage(params,()=>{});
-          var bg = window.chrome.extension.getBackgroundPage();
-          console.log(bg);
-          bg.callffwapi(params);
+          // var bg = window.chrome.extension.getBackgroundPage();
+          // console.log(bg);
+          // bg.callffwapi(params);
+          //直接给content-script，即ffw.js发送消息
+          this.sendMessageToContentScript(params);
         }catch(err){
           console.error(err)
         }
@@ -211,12 +182,6 @@ export default {
       // alert('-----signxdr-success---' + data)
       this.successEvent('success',data)
     },
-    showAccounts(){
-        this.showaccountsview = true
-    },
-    closeView(){
-        this.showaccountsview = false
-    },
 
   },
   components: {
@@ -229,98 +194,7 @@ export default {
     BackUpData,
     SignXDR,
     Sign,
-    AccountsNav,
   }
 }
 </script>
 
-
-<style lang="stylus" scoped>
-@require '../../stylus/color.styl'
-.app-card
-  background: $secondarycolor.gray
-.app-title
-  padding: .1rem .1rem
-  overflow: hidden
-  white-space: nowrap
-  font-size: 14px
-.card-content
-  padding: 20px 10px
-.t2
-  font-size: 16px
-.btns
-  font-size: 16px
-.dlg-green
-  color: $primarycolor.green
-.dlg-content
-  background: $secondarycolor.gray
-  color: $primarycolor.red
-
-.server-apps-layout
-  background: $secondarycolor.gray
-  margin: 8px 8px!important
-  border-radius: 5px
-
-.apps-layout
-  background: $secondarycolor.gray
-  margin: 8px 8px!important
-  border-radius: 5px
-.app-card
-  background: $secondarycolor.gray!important
-.app-card-wrapper
-  border: 1px solid $primarycolor.gray!important
-.app-avatar
-  border-radius: 50%!important
-.dapp-subtitle
-  color: $secondarycolor.font
-.add-app-avatar
-  background: $secondarycolor.gray!important
-.hidebackground
-  background: none!important
-
-.dapp--container
-  position: fixed
-  top: 0
-  left: 0
-  right: 0
-  bottom: 0
-  overflow-y: auto
-  background: $primarycolor.gray
-  z-index: 9
-  .dapp__progress
-    width:375px
-    margin: 0 auto
-  .dapp__toolbar
-    margin: auto auto
-    height: 48px
-    line-height: 48px
-    .dapp__t__bar
-      line-height: 48px
-      background: $primarycolor.green
-      width:375px
-      margin: 0 auto
-      .material-icons
-        cursor: pointer
-  .webView
-    width:375px
-    height:667px
-    margin: auto auto
-    background: #ffffff
-
-.app-icon-del
-  position: absolute
-  top: 4px
-  right: 4px
-  cursor: pointer
-  .material-icons
-    font-size: 20px
-    color: #999999
-.app-icon-edit
-  position: absolute
-  cursor: pointer
-  top: 4px
-  right: 28px
-  .material-icons
-    font-size: 20px
-    color: #999999
-</style>

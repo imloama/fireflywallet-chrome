@@ -13,45 +13,60 @@
 // 7. 授信
 // 向页面注入JS
  */ 
+import codes from './injectcodes';
 
  // 接收来自后台的消息
 window.chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 	console.log('收到来自 ' + (sender.tab ? "content-script(" + sender.tab.url + ")" : "popup或者background") + ' 的消息：', request);
-	if(request.cmd == 'update_font_size') {
-		var ele = document.createElement('style');
-		ele.innerHTML = `* {font-size: ${request.size}px !important;}`;
-		document.head.appendChild(ele);
-	}
-	else {
-		// tip(JSON.stringify(request));
-		sendResponse('我收到你的消息了：'+JSON.stringify(request));
-	}
+  console.log(request);
+  if(request.type === 'apicallback') {
+    // 来自于api界面的回调
+    let cb = window.FFW.callbackObjs[request.callback];
+    if(cb){
+      cb(request.data);
+    }else{
+      alert("firefly wallet works failed!");
+    }
+  }
+  sendResponse({type:'apicallback',message: 'success'});
 });
 
 // 主动发送消息给后台
-// 要演示此功能，请打开控制台主动执行sendMessageToBackground()
-function sendMessageToBackground(message) {
-	window.chrome.runtime.sendMessage({greeting: message || '你好，我是content-script呀，我主动发消息给后台！'}, function(response) {
-    //tip('收到来自后台的回复：' + response);
+function sendMessageToBackground(data, cb) {
+	window.chrome.runtime.sendMessage(data, (response) => {
     console.log('-----from background----');
+    console.log(response);
+    cb(response);
 	});
 };
 
 
-window.document.addEventListener('DOMContentLoaded', ()=>{
+//在网页加载完成后，向后台请求当前账户信息，并向前台注入变量
+window.document.addEventListener('DOMContentLoaded', () => {
+  let temp = document.createElement('script');
+  temp.setAttribute('type', 'text/javascript');
+  sendMessageToBackground({type:'init'},response =>{
+    console.log('read data from response----')
+    console.log(response);
+    let version = response.version;
+    let address = response.address;
+    let locale = response.locale;
+    temp.innerHTML = codes({version,address,locale})
+    document.body.appendChild(temp);
+  })
   
 });
+
 
 //接收网页发出的请求
 window.addEventListener("message", function(message){
   let data = message.data
   if(data && data.method && 'FireFly' === data.host){
-    let method = data.method;
-    let params = data.params;
-    params.method = method;
+    let params = data;
     params.type = 'openffwapi';
     //向后台发出消息
-    window.chrome.runtime.sendMessage(params,response => {
+    sendMessageToBackground(params, response => {
+      console.log('--收到网页消息，再向后台转发--');
       console.log(response);
     });
   }

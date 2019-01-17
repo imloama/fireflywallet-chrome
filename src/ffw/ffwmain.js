@@ -3,18 +3,18 @@
 import Vue from 'vue'
 //import Vuetify from 'vuetify'
 // import 'babel-polyfill'
-import App from './App'
-import store from './store'
-import { i18n }  from './locales/index'
-require('./filters/index')
-require('./directives/swiper')
-require('./api/index')
+import FFWApp from './FFWApp'
+import store from '../store'
+import { i18n }  from '../locales/index'
+require('../filters/index')
+require('../directives/swiper')
+require('../api/index')
 import axios from 'axios'
-require('./api/utils') 
+require('../api/utils') 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
-
-import MLayout from './components/MLayout.vue'
+import router from './ffwrouter'
+import MLayout from '../components/MLayout.vue'
 Vue.component('m-layout', MLayout)
 
 import Toasted from 'vue-toasted';
@@ -29,10 +29,12 @@ import '@/libs/pkgs/initVuetify'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-export const app =new Vue({
-  el: '#app',
+export const app = new Vue({
+  el: "#app",
+  router,
   store,
   i18n,
-  render: h => h(App),
-})
+  render: h => h(FFWApp),
+  // component: <App/>
+});
 
