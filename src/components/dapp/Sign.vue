@@ -3,7 +3,7 @@
   <div class="sign-xdr-wrapper">
     
     <!-- 显示确认签名界面 -->
-    <div class="confirm-wrapper">
+    <div class="confirm-wrapper" v-if="!showPwd">
       <div class="confirm-blank"></div>
       <div  class="confirm-dlg">
       <v-dialog v-model="showDlg" persistent dark max-width="460">
@@ -31,6 +31,8 @@
       </div>
     </div>
 
+    <password-sheet :lock="showPwd" @ok="doSign" v-else/>
+
   </div>  
 </template>
 
@@ -45,13 +47,14 @@ import { readAccountData } from '@/api/storage'
 import { signToBase64, verifyByBase64 } from '@/api/keypair'
 import { Decimal } from 'decimal.js'
 import isJson from '@/libs/is-json'
+import PasswordSheet from '@/components/PasswordSheet'
 
 export default {
   data(){
     return {
       showDlg: true,//显示界面
-      tx: null,
-      err: null
+      err: null,
+      showPwd: false,
     }
   },
   props: {
@@ -84,6 +87,10 @@ export default {
       this.$emit('exit')
     },
     doSign(){
+      if(!this.islogin){
+        this.showPwd = true;
+        return;
+      }
       let data = signToBase64(this.accountData.seed, this.data)
       this.$emit('success',data)
     },
@@ -91,6 +98,7 @@ export default {
   components: {
     Card,
     Loading,
+    PasswordSheet,
   }
 }
 </script>

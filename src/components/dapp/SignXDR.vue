@@ -3,7 +3,7 @@
   <div class="sign-xdr-wrapper">
     
     <!-- 显示确认签名界面 -->
-    <div class="confirm-wrapper">
+    <div class="confirm-wrapper" v-if="showPwd">
       <div class="confirm-blank"></div>
       <div  class="confirm-dlg">
       <v-dialog v-model="showDlg" persistent dark max-width="460">
@@ -60,6 +60,8 @@
       </div>
     </div>
 
+    <password-sheet :lock="showPwd" @ok="doSign" v-else/>
+
   </div>  
 </template>
 
@@ -80,7 +82,8 @@ export default {
     return {
       showDlg: true,//显示界面
       tx: null,
-      err: null
+      err: null,
+      showPwd: false,
     }
   },
   props: {
@@ -141,6 +144,10 @@ export default {
       if(this.tx === null){
         this.$toasted.error(this.$t(this.err))
         return
+      }
+      if(!this.islogin){
+        this.showPwd = true;
+        return;
       }
       // alert('before-signdx--')
       let data = signDecoratedByTx(this.accountData.seed, this.tx)
