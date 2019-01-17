@@ -4,25 +4,25 @@ import Vue from 'vue'
 //import Vuetify from 'vuetify'
 // import 'babel-polyfill'
 import FFWApp from './FFWApp'
-import store from '../store'
+// import store from '../store'
 import { i18n }  from '../locales/index'
-require('../filters/index')
-require('../directives/swiper')
-require('../api/index')
-import axios from 'axios'
-require('../api/utils') 
-import VueClipboard from 'vue-clipboard2'
-Vue.use(VueClipboard)
+// require('../filters/index')
+// require('../directives/swiper')
+// require('../api/index')
+// import axios from 'axios'
+// require('../api/utils') 
+// import VueClipboard from 'vue-clipboard2'
+// Vue.use(VueClipboard)
 import router from './ffwrouter'
-import MLayout from '../components/MLayout.vue'
-Vue.component('m-layout', MLayout)
+// import MLayout from '../components/MLayout.vue'
+// Vue.component('m-layout', MLayout)
 
-import Toasted from 'vue-toasted';
-Vue.use(Toasted,{ 
-  theme: "primary", 
-  position: "bottom-center", 
-  duration : 3000
-})
+// import Toasted from 'vue-toasted';
+// Vue.use(Toasted,{ 
+//   theme: "primary", 
+//   position: "bottom-center", 
+//   duration : 3000
+// })
 
 import '@/libs/pkgs/initVuetify'
 
@@ -32,7 +32,7 @@ Vue.config.productionTip = false
 export const app = new Vue({
   el: "#app",
   router,
-  store,
+  // store,
   i18n,
   render: h => h(FFWApp),
   // component: <App/>
