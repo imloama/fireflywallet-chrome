@@ -70,6 +70,7 @@ module.exports = {
         config.plugin('html')
             .use(new HtmlWebpackPlugin({
                 excludeChunks: ['background','chromereload','ffw','ffwmain'],
+                // chunks:['chunk-vendors','chunk-common','index'],
                 template: 'public/index.html',
                 filename: 'index.html'
             }));
@@ -77,6 +78,7 @@ module.exports = {
         config.plugin('html2')
             .use(new HtmlWebpackPlugin({
                 excludeChunks: ['background','chromereload','ffw','index'],
+                //chunks:['chunk-vendors','chunk-common','ffwmain'],
                 template: 'public/ffwmain.html',
                 filename: 'ffwmain.html'
             }));

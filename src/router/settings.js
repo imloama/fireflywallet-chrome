@@ -38,11 +38,11 @@ export default {
         component: resolve => require(['../pages/settings/DelPinCode'], resolve)
       },
       
-      {
-        path: '/help',
-        name: 'Help',
-        component: resolve => require(['../pages/settings/Help'], resolve)
-      },
+      // {
+      //   path: '/help',
+      //   name: 'Help',
+      //   component: resolve => require(['../pages/settings/Help'], resolve)
+      // },
       {
         path: '/about',
         name: 'About',

@@ -19,7 +19,7 @@ import Picklanguage from '../pages/Picklanguage'
 import Guidepage from '../pages/Guidepage'
 import Funding from '@/pages/Funding.vue'
 import PinLock from '@/pages/PinLock'
-import dapp from './dapp';
+// import dapp from './dapp';
 import Explorer from '@/pages/explorer.vue'
 
 // import TermsOfService from  '../pages/TermsOfService.vue'
@@ -55,11 +55,11 @@ const router = new Router({
       }
     },
     
-    {
-      path: '/explorer',
-      name: 'Explorer',
-      component: Explorer
-    },
+    // {
+    //   path: '/explorer',
+    //   name: 'Explorer',
+    //   component: Explorer
+    // },
     {
       path: '/wallet',
       name: 'Wallet',
@@ -95,19 +95,19 @@ const router = new Router({
       name: 'CreateAccountReady',
       component: resolve => require(['../pages/CreateAccountReady.vue'], resolve)
     },
-    {
-      path: '/funding',
-      name: 'Funding',
-      component: Funding,
-      meta: {
-        keepAlive: false
-      }
-    },
-    {
-      path: '/autofund',
-      name: 'AutoFund',
-      component: resolve => require(['../pages/AutoFund.vue'], resolve)
-    },
+    // {
+    //   path: '/funding',
+    //   name: 'Funding',
+    //   component: Funding,
+    //   meta: {
+    //     keepAlive: false
+    //   }
+    // },
+    // {
+    //   path: '/autofund',
+    //   name: 'AutoFund',
+    //   component: resolve => require(['../pages/AutoFund.vue'], resolve)
+    // },
     {
       path: '/askforfund',
       name: 'AskForFund',
@@ -156,7 +156,7 @@ const router = new Router({
     contacts,
     addresses,
     account,
-    dapps,
+    // dapps,
     settings,
     
   ]

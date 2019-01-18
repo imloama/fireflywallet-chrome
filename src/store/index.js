@@ -228,7 +228,7 @@ const store = new Vuex.Store({
     trades: TradesStore,
     message:MessageStore
   },
-  plugins
+  // plugins
 
 })
 
