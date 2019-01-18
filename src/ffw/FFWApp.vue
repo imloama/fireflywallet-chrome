@@ -5,16 +5,16 @@
     <v-toolbar :height="`60px`" fixed dark class="primary itoolbar" dense :clipped-left='true'>
         <v-toolbar-title class="white--text">{{$t('AppName')}}</v-toolbar-title>
         <v-spacer></v-spacer>
+        <span>{{showname}}</span>
     </v-toolbar>
 
-
-    <router-view/>
+    <f-f-w-c></f-f-w-c>
     
   </div>
 </template>
 
 <script>
-// import { mapState, mapActions} from 'vuex'
+import { mapState, mapActions} from 'vuex'
 import Card from '@/components/Card'
 import Loading from '@/components/Loading'
 import defaultsDeep  from 'lodash/defaultsDeep'
@@ -26,6 +26,7 @@ import { signToBase64, verifyByBase64 } from '@/api/keypair'
 import isJson from '@/libs/is-json'
 import debounce from 'lodash/debounce'
 const COLOR_GREEN = '#21CE90'
+import FFWC from './FFWC'
 
 export default {
   data(){
@@ -44,14 +45,19 @@ export default {
     }
   },
    computed:{
-     account(){
-       return this.$store.state.accounts.selectedAccount
-     },
-     accountData(){
-       return this.$store.state.accounts.accountData
-     },
-     islogin(){
-       return this.$store.state.accounts.accountData.seed ? true : false
+     ...mapState({
+       account: state => state.accounts.selectedAccount,
+       accountData: state => state.accounts.accountData,
+       islogin: state => state.accounts.accountData.seed ? true : false
+     }),
+     showname(){
+       let account = this.$store.state.accounts.selectedAccount
+       if(account && account.address){
+         let address = account.address;
+         return address.substring(0,4)+"..."+address.substring(address.length-4,address.length)
+          +"(" + account.name +")";
+       }
+       return null;
      }
   },
   beforeMount(){
@@ -69,6 +75,7 @@ export default {
   components: {
     Loading,
     Card,
+    FFWC
   }
 }
 </script>
